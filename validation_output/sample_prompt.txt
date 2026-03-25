@@ -1,0 +1,80 @@
+DATABASE SCHEMA CONTEXT
+Tables included: 3 of 7
+Filtered by relevance to: "total revenue by product category"
+
+TABLE: inventory_items
+Row count: 490,905
+Domains: products
+
+Columns:
+  - id (INT64, NULLABLE): identifier [cardinality: 487,550, range: 1 to 490905]
+  - product_id (INT64, NULLABLE): product foreign key reference [cardinality: 29,233, range: 1 to 29120]
+  - created_at (TIMESTAMP, NULLABLE): created timestamp [cardinality: 472,798, range: 2018-11-06 17:44:57+00 to 2026-03-27 15:51:09.442701+00]
+  - sold_at (TIMESTAMP, NULLABLE): sold timestamp [cardinality: 180,358, 63% nulls, range: 2019-01-03 14:56:57+00 to 2026-03-28 00:19:02+00]
+  - cost (FLOAT64, NULLABLE): cost [cardinality: 26,300, range: 0.0082999997779726 to 557.15100217983127]
+  - product_category (STRING, NULLABLE): product category [cardinality: 26]
+  - product_name (STRING, NULLABLE): product name [cardinality: 27,088]
+  - product_brand (STRING, NULLABLE): product brand [cardinality: 2,758]
+  - product_retail_price (FLOAT64, NULLABLE): product retail price [cardinality: 4,190, range: 0.0199999995529651 to 999]
+  - product_department (STRING, NULLABLE) [cardinality: 2]
+  - product_sku (STRING, NULLABLE) [cardinality: 28,954]
+  - product_distribution_center_id (INT64, NULLABLE): product distribution center foreign key reference [cardinality: 10, range: 1 to 10]
+
+Relationships:
+  - inventory_items.product_id → products.id (inferred, confidence: 0.90)
+
+Sample rows:
+  | id | product_id | created_at | sold_at | cost | product_category | product_name | product_brand | product_retail_price | product_department | product_sku | product_distribution_center_id |
+  | 165692 | 13844 | 2025-02-10 16:06:51+00:00 | 2025-03-11 17:23:51+00:00 | 2.768039897618853 | Accessories | (ONE) 1 Satin Headband | Funny Girl Designs | 6.989999771118164 | Women | 2A3E953A5E3D81E67945BCE5519F84C8 | 7 |
+  | 165693 | 13844 | 2024-12-04 12:04:00+00:00 | None | 2.768039897618853 | Accessories | (ONE) 1 Satin Headband | Funny Girl Designs | 6.989999771118164 | Women | 2A3E953A5E3D81E67945BCE5519F84C8 | 7 |
+
+TABLE: products
+Row count: 29,120
+Domains: products
+
+Columns:
+  - id (INT64, NULLABLE): identifier [cardinality: 29,302, range: 1 to 29120]
+  - cost (FLOAT64, NULLABLE): cost [cardinality: 26,335, range: 0.0082999997779726 to 557.15100217983127]
+  - category (STRING, NULLABLE): category [cardinality: 26]
+  - name (STRING, NULLABLE): name [cardinality: 27,129, 0% nulls]
+  - brand (STRING, NULLABLE): brand [cardinality: 2,757, 0% nulls]
+  - retail_price (FLOAT64, NULLABLE): retail price [cardinality: 4,195, range: 0.0199999995529651 to 999]
+  - department (STRING, NULLABLE): department [cardinality: 2]
+  - sku (STRING, NULLABLE): stock keeping unit (SKU) [cardinality: 29,025]
+  - distribution_center_id (INT64, NULLABLE): distribution center foreign key reference [cardinality: 10, range: 1 to 10]
+
+Relationships:
+  - products.distribution_center_id → distribution_centers.id (inferred, confidence: 0.90)
+
+Sample rows:
+  | id | cost | category | name | brand | retail_price | department | sku | distribution_center_id |
+  | 13842 | 2.518749990849756 | Accessories | Low Profile Dyed Cotton Twill Cap - Navy W39S55D | MG | 6.25 | Women | EBD58B8A3F1D72F4206201DA62FB1204 | 1 |
+  | 13928 | 2.3383499148894105 | Accessories | Low Profile Dyed Cotton Twill Cap - Putty W39S55D | MG | 5.949999809265137 | Women | 2EAC42424D12436BDD6A5B8A88480CC3 | 1 |
+
+TABLE: order_items
+Row count: 181,833
+Domains: products, sales, users
+
+Columns:
+  - id (INT64, NULLABLE): identifier [cardinality: 181,673, range: 1 to 181833]
+  - order_id (INT64, NULLABLE): order foreign key reference [cardinality: 125,157, range: 1 to 125613]
+  - user_id (INT64, NULLABLE): user foreign key reference [cardinality: 79,796, range: 1 to 99999]
+  - product_id (INT64, NULLABLE): product foreign key reference [cardinality: 29,233, range: 1 to 29120]
+  - inventory_item_id (INT64, NULLABLE): inventory item foreign key reference [cardinality: 181,811, range: 2 to 490905]
+  - status (STRING, NULLABLE): status [cardinality: 5]
+  - created_at (TIMESTAMP, NULLABLE): created timestamp [cardinality: 180,358, range: 2019-01-03 14:56:57+00 to 2026-03-28 00:19:02+00]
+  - shipped_at (TIMESTAMP, NULLABLE): shipped timestamp [cardinality: 82,291, 35% nulls, range: 2019-01-06 03:56:47+00 to 2026-03-26 23:38:26.949487+00]
+  - delivered_at (TIMESTAMP, NULLABLE): delivered timestamp [cardinality: 43,800, 65% nulls, range: 2019-01-08 17:54:47+00 to 2026-03-31 12:38:57+00]
+  - returned_at (TIMESTAMP, NULLABLE): returned timestamp [cardinality: 12,597, 90% nulls, range: 2019-02-22 01:49:17+00 to 2026-04-02 08:59:28.665283+00]
+  - sale_price (FLOAT64, NULLABLE): sale price [cardinality: 4,190, range: 0.0199999995529651 to 999]
+
+Relationships:
+  - order_items.order_id → orders.id (inferred, confidence: 0.90)
+  - order_items.user_id → users.id (inferred, confidence: 0.90)
+  - order_items.product_id → products.id (inferred, confidence: 0.90)
+  - order_items.inventory_item_id → inventory_items.id (inferred, confidence: 0.90)
+
+Sample rows:
+  | id | order_id | user_id | product_id | inventory_item_id | status | created_at | shipped_at | delivered_at | returned_at | sale_price |
+  | 44135 | 30411 | 24284 | 14235 | 119156 | Complete | 2024-11-11 17:25:27+00:00 | 2024-11-13 12:40:55+00:00 | 2024-11-16 11:39:55+00:00 | None | 0.0199999995529651 |
+  | 151619 | 104641 | 83283 | 14235 | 409361 | Complete | 2026-02-15 23:37:07+00:00 | 2026-02-13 01:34:56+00:00 | 2026-02-14 16:15:56+00:00 | None | 0.0199999995529651 |

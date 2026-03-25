@@ -1,0 +1,1609 @@
+{
+  "version": "1.0",
+  "source": "bigquery://bigquery-public-data.thelook_ecommerce",
+  "extracted_at": "2026-03-25T00:28:15.476502+00:00",
+  "enrichers_applied": [
+    "descriptions",
+    "relations",
+    "domains",
+    "stats",
+    "samples"
+  ],
+  "tables": [
+    {
+      "name": "distribution_centers",
+      "fingerprint": "3fa4be1c26b95843",
+      "row_count": 10,
+      "metadata": {
+        "row_count": 10,
+        "size_bytes": 809,
+        "last_modified": "2026-03-24 03:34:13.934000+00:00"
+      },
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "identifier",
+          "stats": {
+            "cardinality": 10,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "10",
+            "top_values": [
+              "10",
+              "8",
+              "9",
+              "1",
+              "2"
+            ]
+          }
+        },
+        {
+          "name": "name",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "name",
+          "stats": {
+            "cardinality": 10,
+            "null_pct": 0.0,
+            "top_values": [
+              "Savannah GA",
+              "Mobile AL",
+              "Charleston SC",
+              "Memphis TN",
+              "Chicago IL"
+            ]
+          }
+        },
+        {
+          "name": "latitude",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "latitude coordinate",
+          "stats": {
+            "cardinality": 10,
+            "null_pct": 0.0,
+            "min_value": "29.7604",
+            "max_value": "41.8369",
+            "top_values": [
+              "32.0167",
+              "30.6944",
+              "32.7833",
+              "35.1174",
+              "41.8369"
+            ]
+          }
+        },
+        {
+          "name": "longitude",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "longitude coordinate",
+          "stats": {
+            "cardinality": 10,
+            "null_pct": 0.0,
+            "min_value": "-118.25",
+            "max_value": "-73.7834",
+            "top_values": [
+              "-81.1167",
+              "-88.0431",
+              "-79.9333",
+              "-89.9711",
+              "-87.6847"
+            ]
+          }
+        },
+        {
+          "name": "distribution_center_geom",
+          "data_type": "GEOGRAPHY",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5
+        }
+      ],
+      "sample_data": [
+        {
+          "id": 8,
+          "name": "Mobile AL",
+          "latitude": 30.6944,
+          "longitude": -88.0431,
+          "distribution_center_geom": "POINT(-88.0431 30.6944)"
+        },
+        {
+          "id": 9,
+          "name": "Charleston SC",
+          "latitude": 32.7833,
+          "longitude": -79.9333,
+          "distribution_center_geom": "POINT(-79.9333 32.7833)"
+        },
+        {
+          "id": 2,
+          "name": "Chicago IL",
+          "latitude": 41.8369,
+          "longitude": -87.6847,
+          "distribution_center_geom": "POINT(-87.6847 41.8369)"
+        }
+      ]
+    },
+    {
+      "name": "events",
+      "fingerprint": "73ab3d1a0570ba8c",
+      "row_count": 2428411,
+      "domains": [
+        "analytics",
+        "users"
+      ],
+      "metadata": {
+        "row_count": 2428411,
+        "size_bytes": 385661834,
+        "last_modified": "2026-03-24 03:33:52.732000+00:00"
+      },
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "identifier",
+          "stats": {
+            "cardinality": 2431325,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "2428411"
+          }
+        },
+        {
+          "name": "user_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "user foreign key reference",
+          "stats": {
+            "cardinality": 79796,
+            "null_pct": 0.4636,
+            "min_value": "1",
+            "max_value": "99999"
+          }
+        },
+        {
+          "name": "sequence_number",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "sequence number",
+          "stats": {
+            "cardinality": 13,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "13",
+            "top_values": [
+              "1",
+              "2",
+              "3",
+              "5",
+              "4"
+            ]
+          }
+        },
+        {
+          "name": "session_id",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "session foreign key reference",
+          "stats": {
+            "cardinality": 685176,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5,
+          "description": "created timestamp",
+          "stats": {
+            "cardinality": 2221455,
+            "null_pct": 0.0,
+            "min_value": "2019-01-02 00:16:00+00",
+            "max_value": "2026-03-28 00:19:02+00"
+          }
+        },
+        {
+          "name": "ip_address",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 6,
+          "description": "ip address",
+          "stats": {
+            "cardinality": 682651,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "city",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 7,
+          "description": "city",
+          "stats": {
+            "cardinality": 8775,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "state",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 8,
+          "description": "state",
+          "stats": {
+            "cardinality": 231,
+            "null_pct": 0.0,
+            "top_values": [
+              "Guangdong",
+              "England",
+              "California",
+              "Shanghai",
+              "Texas"
+            ]
+          }
+        },
+        {
+          "name": "postal_code",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 9,
+          "description": "postal code",
+          "stats": {
+            "cardinality": 17317,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "browser",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 10,
+          "description": "browser",
+          "stats": {
+            "cardinality": 5,
+            "null_pct": 0.0,
+            "top_values": [
+              "Chrome",
+              "Firefox",
+              "Safari",
+              "IE",
+              "Other"
+            ]
+          }
+        },
+        {
+          "name": "traffic_source",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 11,
+          "stats": {
+            "cardinality": 5,
+            "null_pct": 0.0,
+            "top_values": [
+              "Email",
+              "Adwords",
+              "YouTube",
+              "Facebook",
+              "Organic"
+            ]
+          }
+        },
+        {
+          "name": "uri",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 12,
+          "stats": {
+            "cardinality": 35518,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "event_type",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 13,
+          "description": "event type",
+          "stats": {
+            "cardinality": 6,
+            "null_pct": 0.0,
+            "top_values": [
+              "product",
+              "cart",
+              "department",
+              "purchase",
+              "cancel"
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "source_table": "events",
+          "source_column": "user_id",
+          "target_table": "users",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        }
+      ],
+      "sample_data": [
+        {
+          "id": 1664651,
+          "user_id": null,
+          "sequence_number": 3,
+          "session_id": "cb8b7944-0162-4777-9744-0896f8cc29b0",
+          "created_at": "2023-11-10 15:30:00+00:00",
+          "ip_address": "61.251.51.97",
+          "city": "São Paulo",
+          "state": "São Paulo",
+          "postal_code": "02220-000",
+          "browser": "Safari",
+          "traffic_source": "Adwords",
+          "uri": "/cancel",
+          "event_type": "cancel"
+        },
+        {
+          "id": 2400186,
+          "user_id": null,
+          "sequence_number": 3,
+          "session_id": "48eed1b0-392a-40f8-b944-d21c5c185cfc",
+          "created_at": "2021-05-01 10:06:00+00:00",
+          "ip_address": "75.189.43.80",
+          "city": "São Paulo",
+          "state": "São Paulo",
+          "postal_code": "02220-000",
+          "browser": "Other",
+          "traffic_source": "Email",
+          "uri": "/cancel",
+          "event_type": "cancel"
+        },
+        {
+          "id": 1483633,
+          "user_id": null,
+          "sequence_number": 3,
+          "session_id": "41afce48-8521-4adb-806c-a594e0356796",
+          "created_at": "2023-03-29 10:43:00+00:00",
+          "ip_address": "184.255.22.199",
+          "city": "São Paulo",
+          "state": "São Paulo",
+          "postal_code": "02675-031",
+          "browser": "Firefox",
+          "traffic_source": "YouTube",
+          "uri": "/cancel",
+          "event_type": "cancel"
+        }
+      ]
+    },
+    {
+      "name": "inventory_items",
+      "fingerprint": "22a515530c33a074",
+      "row_count": 490905,
+      "domains": [
+        "products"
+      ],
+      "metadata": {
+        "row_count": 490905,
+        "size_bytes": 81372828,
+        "last_modified": "2026-03-24 03:33:53.115000+00:00"
+      },
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "identifier",
+          "stats": {
+            "cardinality": 487550,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "490905"
+          }
+        },
+        {
+          "name": "product_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "product foreign key reference",
+          "stats": {
+            "cardinality": 29233,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "29120"
+          }
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "created timestamp",
+          "stats": {
+            "cardinality": 472798,
+            "null_pct": 0.0,
+            "min_value": "2018-11-06 17:44:57+00",
+            "max_value": "2026-03-27 15:51:09.442701+00"
+          }
+        },
+        {
+          "name": "sold_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "sold timestamp",
+          "stats": {
+            "cardinality": 180358,
+            "null_pct": 0.6296,
+            "min_value": "2019-01-03 14:56:57+00",
+            "max_value": "2026-03-28 00:19:02+00"
+          }
+        },
+        {
+          "name": "cost",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5,
+          "description": "cost",
+          "stats": {
+            "cardinality": 26300,
+            "null_pct": 0.0,
+            "min_value": "0.0082999997779726",
+            "max_value": "557.15100217983127"
+          }
+        },
+        {
+          "name": "product_category",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 6,
+          "description": "product category",
+          "stats": {
+            "cardinality": 26,
+            "null_pct": 0.0,
+            "top_values": [
+              "Intimates",
+              "Jeans",
+              "Tops & Tees",
+              "Fashion Hoodies & Sweatshirts",
+              "Swim"
+            ]
+          }
+        },
+        {
+          "name": "product_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 7,
+          "description": "product name",
+          "stats": {
+            "cardinality": 27088,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "product_brand",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 8,
+          "description": "product brand",
+          "stats": {
+            "cardinality": 2758,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "product_retail_price",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 9,
+          "description": "product retail price",
+          "stats": {
+            "cardinality": 4190,
+            "null_pct": 0.0,
+            "min_value": "0.0199999995529651",
+            "max_value": "999"
+          }
+        },
+        {
+          "name": "product_department",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 10,
+          "stats": {
+            "cardinality": 2,
+            "null_pct": 0.0,
+            "top_values": [
+              "Women",
+              "Men"
+            ]
+          }
+        },
+        {
+          "name": "product_sku",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 11,
+          "stats": {
+            "cardinality": 28954,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "product_distribution_center_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 12,
+          "description": "product distribution center foreign key reference",
+          "stats": {
+            "cardinality": 10,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "10",
+            "top_values": [
+              "1",
+              "2",
+              "3",
+              "8",
+              "4"
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "source_table": "inventory_items",
+          "source_column": "product_id",
+          "target_table": "products",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        }
+      ],
+      "sample_data": [
+        {
+          "id": 165692,
+          "product_id": 13844,
+          "created_at": "2025-02-10 16:06:51+00:00",
+          "sold_at": "2025-03-11 17:23:51+00:00",
+          "cost": 2.768039897618853,
+          "product_category": "Accessories",
+          "product_name": "(ONE) 1 Satin Headband",
+          "product_brand": "Funny Girl Designs",
+          "product_retail_price": 6.989999771118164,
+          "product_department": "Women",
+          "product_sku": "2A3E953A5E3D81E67945BCE5519F84C8",
+          "product_distribution_center_id": 7
+        },
+        {
+          "id": 165693,
+          "product_id": 13844,
+          "created_at": "2024-12-04 12:04:00+00:00",
+          "sold_at": null,
+          "cost": 2.768039897618853,
+          "product_category": "Accessories",
+          "product_name": "(ONE) 1 Satin Headband",
+          "product_brand": "Funny Girl Designs",
+          "product_retail_price": 6.989999771118164,
+          "product_department": "Women",
+          "product_sku": "2A3E953A5E3D81E67945BCE5519F84C8",
+          "product_distribution_center_id": 7
+        },
+        {
+          "id": 189018,
+          "product_id": 13844,
+          "created_at": "2023-05-01 23:49:19+00:00",
+          "sold_at": "2023-05-28 19:28:19+00:00",
+          "cost": 2.768039897618853,
+          "product_category": "Accessories",
+          "product_name": "(ONE) 1 Satin Headband",
+          "product_brand": "Funny Girl Designs",
+          "product_retail_price": 6.989999771118164,
+          "product_department": "Women",
+          "product_sku": "2A3E953A5E3D81E67945BCE5519F84C8",
+          "product_distribution_center_id": 7
+        }
+      ]
+    },
+    {
+      "name": "order_items",
+      "fingerprint": "7bba29aa84c703e1",
+      "row_count": 181833,
+      "domains": [
+        "products",
+        "sales",
+        "users"
+      ],
+      "metadata": {
+        "row_count": 181833,
+        "size_bytes": 13649036,
+        "last_modified": "2026-03-24 03:33:49.537000+00:00"
+      },
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "identifier",
+          "stats": {
+            "cardinality": 181673,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "181833"
+          }
+        },
+        {
+          "name": "order_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "order foreign key reference",
+          "stats": {
+            "cardinality": 125157,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "125613"
+          }
+        },
+        {
+          "name": "user_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "user foreign key reference",
+          "stats": {
+            "cardinality": 79796,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "99999"
+          }
+        },
+        {
+          "name": "product_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "product foreign key reference",
+          "stats": {
+            "cardinality": 29233,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "29120"
+          }
+        },
+        {
+          "name": "inventory_item_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5,
+          "description": "inventory item foreign key reference",
+          "stats": {
+            "cardinality": 181811,
+            "null_pct": 0.0,
+            "min_value": "2",
+            "max_value": "490905"
+          }
+        },
+        {
+          "name": "status",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 6,
+          "description": "status",
+          "stats": {
+            "cardinality": 5,
+            "null_pct": 0.0,
+            "top_values": [
+              "Shipped",
+              "Complete",
+              "Processing",
+              "Cancelled",
+              "Returned"
+            ]
+          }
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 7,
+          "description": "created timestamp",
+          "stats": {
+            "cardinality": 180358,
+            "null_pct": 0.0,
+            "min_value": "2019-01-03 14:56:57+00",
+            "max_value": "2026-03-28 00:19:02+00"
+          }
+        },
+        {
+          "name": "shipped_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 8,
+          "description": "shipped timestamp",
+          "stats": {
+            "cardinality": 82291,
+            "null_pct": 0.3481,
+            "min_value": "2019-01-06 03:56:47+00",
+            "max_value": "2026-03-26 23:38:26.949487+00"
+          }
+        },
+        {
+          "name": "delivered_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 9,
+          "description": "delivered timestamp",
+          "stats": {
+            "cardinality": 43800,
+            "null_pct": 0.6503,
+            "min_value": "2019-01-08 17:54:47+00",
+            "max_value": "2026-03-31 12:38:57+00"
+          }
+        },
+        {
+          "name": "returned_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 10,
+          "description": "returned timestamp",
+          "stats": {
+            "cardinality": 12597,
+            "null_pct": 0.8991,
+            "min_value": "2019-02-22 01:49:17+00",
+            "max_value": "2026-04-02 08:59:28.665283+00"
+          }
+        },
+        {
+          "name": "sale_price",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 11,
+          "description": "sale price",
+          "stats": {
+            "cardinality": 4190,
+            "null_pct": 0.0,
+            "min_value": "0.0199999995529651",
+            "max_value": "999"
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "source_table": "order_items",
+          "source_column": "order_id",
+          "target_table": "orders",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        },
+        {
+          "source_table": "order_items",
+          "source_column": "user_id",
+          "target_table": "users",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        },
+        {
+          "source_table": "order_items",
+          "source_column": "product_id",
+          "target_table": "products",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        },
+        {
+          "source_table": "order_items",
+          "source_column": "inventory_item_id",
+          "target_table": "inventory_items",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        }
+      ],
+      "sample_data": [
+        {
+          "id": 44135,
+          "order_id": 30411,
+          "user_id": 24284,
+          "product_id": 14235,
+          "inventory_item_id": 119156,
+          "status": "Complete",
+          "created_at": "2024-11-11 17:25:27+00:00",
+          "shipped_at": "2024-11-13 12:40:55+00:00",
+          "delivered_at": "2024-11-16 11:39:55+00:00",
+          "returned_at": null,
+          "sale_price": 0.0199999995529651
+        },
+        {
+          "id": 151619,
+          "order_id": 104641,
+          "user_id": 83283,
+          "product_id": 14235,
+          "inventory_item_id": 409361,
+          "status": "Complete",
+          "created_at": "2026-02-15 23:37:07+00:00",
+          "shipped_at": "2026-02-13 01:34:56+00:00",
+          "delivered_at": "2026-02-14 16:15:56+00:00",
+          "returned_at": null,
+          "sale_price": 0.0199999995529651
+        },
+        {
+          "id": 161240,
+          "order_id": 111261,
+          "user_id": 88527,
+          "product_id": 14159,
+          "inventory_item_id": 435440,
+          "status": "Cancelled",
+          "created_at": "2024-11-15 07:11:27+00:00",
+          "shipped_at": null,
+          "delivered_at": null,
+          "returned_at": null,
+          "sale_price": 0.4900000095367431
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "fingerprint": "328d60f29ee276b2",
+      "row_count": 125613,
+      "domains": [
+        "sales",
+        "users"
+      ],
+      "metadata": {
+        "row_count": 125613,
+        "size_bytes": 6789346,
+        "last_modified": "2026-03-24 03:33:49.085000+00:00"
+      },
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "order foreign key reference",
+          "stats": {
+            "cardinality": 125157,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "125613"
+          }
+        },
+        {
+          "name": "user_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "user foreign key reference",
+          "stats": {
+            "cardinality": 79796,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "99999"
+          }
+        },
+        {
+          "name": "status",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "status",
+          "stats": {
+            "cardinality": 5,
+            "null_pct": 0.0,
+            "top_values": [
+              "Shipped",
+              "Complete",
+              "Processing",
+              "Cancelled",
+              "Returned"
+            ]
+          }
+        },
+        {
+          "name": "gender",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "gender",
+          "stats": {
+            "cardinality": 2,
+            "null_pct": 0.0,
+            "top_values": [
+              "F",
+              "M"
+            ]
+          }
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5,
+          "description": "created timestamp",
+          "stats": {
+            "cardinality": 126533,
+            "null_pct": 0.0,
+            "min_value": "2019-01-03 16:13:47+00",
+            "max_value": "2026-03-24 00:43:50.391301+00"
+          }
+        },
+        {
+          "name": "returned_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 6,
+          "description": "returned timestamp",
+          "stats": {
+            "cardinality": 12597,
+            "null_pct": 0.8997,
+            "min_value": "2019-02-22 01:49:17+00",
+            "max_value": "2026-04-02 08:59:28.665283+00"
+          }
+        },
+        {
+          "name": "shipped_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 7,
+          "description": "shipped timestamp",
+          "stats": {
+            "cardinality": 82291,
+            "null_pct": 0.3494,
+            "min_value": "2019-01-06 03:56:47+00",
+            "max_value": "2026-03-26 23:38:26.949487+00"
+          }
+        },
+        {
+          "name": "delivered_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 8,
+          "description": "delivered timestamp",
+          "stats": {
+            "cardinality": 43800,
+            "null_pct": 0.6506,
+            "min_value": "2019-01-08 17:54:47+00",
+            "max_value": "2026-03-31 12:38:57+00"
+          }
+        },
+        {
+          "name": "num_of_item",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 9,
+          "description": "count of of item",
+          "stats": {
+            "cardinality": 4,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "4",
+            "top_values": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "source_table": "orders",
+          "source_column": "user_id",
+          "target_table": "users",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        }
+      ],
+      "sample_data": [
+        {
+          "order_id": 3,
+          "user_id": 2,
+          "status": "Cancelled",
+          "gender": "F",
+          "created_at": "2025-01-13 19:04:51+00:00",
+          "returned_at": null,
+          "shipped_at": null,
+          "delivered_at": null,
+          "num_of_item": 1
+        },
+        {
+          "order_id": 35,
+          "user_id": 37,
+          "status": "Cancelled",
+          "gender": "F",
+          "created_at": "2022-03-31 18:04:44+00:00",
+          "returned_at": null,
+          "shipped_at": null,
+          "delivered_at": null,
+          "num_of_item": 1
+        },
+        {
+          "order_id": 44,
+          "user_id": 43,
+          "status": "Cancelled",
+          "gender": "F",
+          "created_at": "2025-09-06 11:37:22+00:00",
+          "returned_at": null,
+          "shipped_at": null,
+          "delivered_at": null,
+          "num_of_item": 1
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "fingerprint": "ce9af9318af1c779",
+      "row_count": 29120,
+      "domains": [
+        "products"
+      ],
+      "metadata": {
+        "row_count": 29120,
+        "size_bytes": 4285975,
+        "last_modified": "2026-03-24 03:33:46.857000+00:00"
+      },
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "identifier",
+          "stats": {
+            "cardinality": 29302,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "29120"
+          }
+        },
+        {
+          "name": "cost",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "cost",
+          "stats": {
+            "cardinality": 26335,
+            "null_pct": 0.0,
+            "min_value": "0.0082999997779726",
+            "max_value": "557.15100217983127"
+          }
+        },
+        {
+          "name": "category",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "category",
+          "stats": {
+            "cardinality": 26,
+            "null_pct": 0.0,
+            "top_values": [
+              "Intimates",
+              "Jeans",
+              "Tops & Tees",
+              "Fashion Hoodies & Sweatshirts",
+              "Swim"
+            ]
+          }
+        },
+        {
+          "name": "name",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "name",
+          "stats": {
+            "cardinality": 27129,
+            "null_pct": 0.0001
+          }
+        },
+        {
+          "name": "brand",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5,
+          "description": "brand",
+          "stats": {
+            "cardinality": 2757,
+            "null_pct": 0.0008
+          }
+        },
+        {
+          "name": "retail_price",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 6,
+          "description": "retail price",
+          "stats": {
+            "cardinality": 4195,
+            "null_pct": 0.0,
+            "min_value": "0.0199999995529651",
+            "max_value": "999"
+          }
+        },
+        {
+          "name": "department",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 7,
+          "description": "department",
+          "stats": {
+            "cardinality": 2,
+            "null_pct": 0.0,
+            "top_values": [
+              "Women",
+              "Men"
+            ]
+          }
+        },
+        {
+          "name": "sku",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 8,
+          "description": "stock keeping unit (SKU)",
+          "stats": {
+            "cardinality": 29025,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "distribution_center_id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 9,
+          "description": "distribution center foreign key reference",
+          "stats": {
+            "cardinality": 10,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "10",
+            "top_values": [
+              "2",
+              "1",
+              "3",
+              "8",
+              "4"
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "source_table": "products",
+          "source_column": "distribution_center_id",
+          "target_table": "distribution_centers",
+          "target_column": "id",
+          "type": "inferred",
+          "confidence": 0.9
+        }
+      ],
+      "sample_data": [
+        {
+          "id": 13842,
+          "cost": 2.518749990849756,
+          "category": "Accessories",
+          "name": "Low Profile Dyed Cotton Twill Cap - Navy W39S55D",
+          "brand": "MG",
+          "retail_price": 6.25,
+          "department": "Women",
+          "sku": "EBD58B8A3F1D72F4206201DA62FB1204",
+          "distribution_center_id": 1
+        },
+        {
+          "id": 13928,
+          "cost": 2.3383499148894105,
+          "category": "Accessories",
+          "name": "Low Profile Dyed Cotton Twill Cap - Putty W39S55D",
+          "brand": "MG",
+          "retail_price": 5.949999809265137,
+          "department": "Women",
+          "sku": "2EAC42424D12436BDD6A5B8A88480CC3",
+          "distribution_center_id": 1
+        },
+        {
+          "id": 14115,
+          "cost": 4.879559879379869,
+          "category": "Accessories",
+          "name": "Enzyme Regular Solid Army Caps-Black W35S45D",
+          "brand": "MG",
+          "retail_price": 10.989999771118164,
+          "department": "Women",
+          "sku": "EE364229B2791D1EF9355708EFF0BA34",
+          "distribution_center_id": 1
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "fingerprint": "7e9dec77c5aec627",
+      "row_count": 100000,
+      "domains": [
+        "users"
+      ],
+      "metadata": {
+        "row_count": 100000,
+        "size_bytes": 19823184,
+        "last_modified": "2026-03-24 03:34:06.704000+00:00"
+      },
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 1,
+          "description": "identifier",
+          "stats": {
+            "cardinality": 99651,
+            "null_pct": 0.0,
+            "min_value": "1",
+            "max_value": "100000"
+          }
+        },
+        {
+          "name": "first_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 2,
+          "description": "first name",
+          "stats": {
+            "cardinality": 690,
+            "null_pct": 0.0,
+            "top_values": [
+              "Michael",
+              "David",
+              "James",
+              "Jennifer",
+              "John"
+            ]
+          }
+        },
+        {
+          "name": "last_name",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 3,
+          "description": "last name",
+          "stats": {
+            "cardinality": 1000,
+            "null_pct": 0.0,
+            "top_values": [
+              "Smith",
+              "Johnson",
+              "Williams",
+              "Jones",
+              "Brown"
+            ]
+          }
+        },
+        {
+          "name": "email",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 4,
+          "description": "email address",
+          "stats": {
+            "cardinality": 84847,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "age",
+          "data_type": "INT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 5,
+          "description": "age",
+          "stats": {
+            "cardinality": 59,
+            "null_pct": 0.0,
+            "min_value": "12",
+            "max_value": "70",
+            "top_values": [
+              "67",
+              "63",
+              "57",
+              "40",
+              "24"
+            ]
+          }
+        },
+        {
+          "name": "gender",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 6,
+          "description": "gender",
+          "stats": {
+            "cardinality": 2,
+            "null_pct": 0.0,
+            "top_values": [
+              "F",
+              "M"
+            ]
+          }
+        },
+        {
+          "name": "state",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 7,
+          "description": "state",
+          "stats": {
+            "cardinality": 230,
+            "null_pct": 0.0,
+            "top_values": [
+              "Guangdong",
+              "England",
+              "California",
+              "Shanghai",
+              "Texas"
+            ]
+          }
+        },
+        {
+          "name": "street_address",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 8,
+          "description": "street address",
+          "stats": {
+            "cardinality": 99493,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "postal_code",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 9,
+          "description": "postal code",
+          "stats": {
+            "cardinality": 15638,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "city",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 10,
+          "description": "city",
+          "stats": {
+            "cardinality": 7856,
+            "null_pct": 0.0
+          }
+        },
+        {
+          "name": "country",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 11,
+          "description": "country",
+          "stats": {
+            "cardinality": 16,
+            "null_pct": 0.0,
+            "top_values": [
+              "China",
+              "United States",
+              "Brasil",
+              "South Korea",
+              "France"
+            ]
+          }
+        },
+        {
+          "name": "latitude",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 12,
+          "description": "latitude coordinate",
+          "stats": {
+            "cardinality": 16384,
+            "null_pct": 0.0,
+            "min_value": "-43.00753639",
+            "max_value": "64.86519412"
+          }
+        },
+        {
+          "name": "longitude",
+          "data_type": "FLOAT64",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 13,
+          "description": "longitude coordinate",
+          "stats": {
+            "cardinality": 16334,
+            "null_pct": 0.0,
+            "min_value": "-158.1649311",
+            "max_value": "153.5602377"
+          }
+        },
+        {
+          "name": "traffic_source",
+          "data_type": "STRING",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 14,
+          "stats": {
+            "cardinality": 5,
+            "null_pct": 0.0,
+            "top_values": [
+              "Search",
+              "Organic",
+              "Facebook",
+              "Email",
+              "Display"
+            ]
+          }
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 15,
+          "description": "created timestamp",
+          "stats": {
+            "cardinality": 99181,
+            "null_pct": 0.0,
+            "min_value": "2019-01-02 01:25:00+00",
+            "max_value": "2026-03-23 19:41:17.962185+00"
+          }
+        },
+        {
+          "name": "user_geom",
+          "data_type": "GEOGRAPHY",
+          "nullable": true,
+          "is_primary_key": false,
+          "ordinal_position": 16
+        }
+      ],
+      "sample_data": [
+        {
+          "id": 68175,
+          "first_name": "Scott",
+          "last_name": "Bailey",
+          "email": "scottbailey@example.org",
+          "age": 12,
+          "gender": "M",
+          "state": "Acre",
+          "street_address": "06805 Thomas Cape",
+          "postal_code": "69980-000",
+          "city": "null",
+          "country": "Brasil",
+          "latitude": -8.065346116,
+          "longitude": -72.87094866,
+          "traffic_source": "Search",
+          "created_at": "2020-10-25 08:50:00+00:00",
+          "user_geom": "POINT(-72.87094866 -8.065346116)"
+        },
+        {
+          "id": 29569,
+          "first_name": "Jenna",
+          "last_name": "Zimmerman",
+          "email": "jennazimmerman@example.net",
+          "age": 29,
+          "gender": "F",
+          "state": "Acre",
+          "street_address": "7276 Mccarty Vista Apt. 225",
+          "postal_code": "69980-000",
+          "city": "null",
+          "country": "Brasil",
+          "latitude": -8.065346116,
+          "longitude": -72.87094866,
+          "traffic_source": "Organic",
+          "created_at": "2025-03-30 13:58:00+00:00",
+          "user_geom": "POINT(-72.87094866 -8.065346116)"
+        },
+        {
+          "id": 48997,
+          "first_name": "William",
+          "last_name": "Reynolds",
+          "email": "williamreynolds@example.net",
+          "age": 66,
+          "gender": "M",
+          "state": "Acre",
+          "street_address": "90167 Erik Crossing",
+          "postal_code": "69980-000",
+          "city": "null",
+          "country": "Brasil",
+          "latitude": -8.065346116,
+          "longitude": -72.87094866,
+          "traffic_source": "Search",
+          "created_at": "2024-12-25 06:04:00+00:00",
+          "user_geom": "POINT(-72.87094866 -8.065346116)"
+        }
+      ]
+    }
+  ]
+}

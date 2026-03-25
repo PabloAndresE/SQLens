@@ -1,0 +1,138 @@
+{
+  "version": "1.0",
+  "source": "memory://ecommerce-test",
+  "extracted_at": "2026-03-19T00:00:00+00:00",
+  "enrichers_applied": [],
+  "tables": [
+    {
+      "name": "users",
+      "fingerprint": "abc123",
+      "row_count": 50000,
+      "metadata": {"row_count": 50000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "email", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "first_name", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "last_name", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "country_code", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 4},
+        {"name": "created_at", "data_type": "TIMESTAMP", "nullable": false, "is_primary_key": false, "ordinal_position": 5},
+        {"name": "last_active_at", "data_type": "TIMESTAMP", "nullable": true, "is_primary_key": false, "ordinal_position": 6},
+        {"name": "is_active", "data_type": "BOOLEAN", "nullable": false, "is_primary_key": false, "ordinal_position": 7}
+      ]
+    },
+    {
+      "name": "orders",
+      "fingerprint": "def456",
+      "row_count": 200000,
+      "metadata": {"row_count": 200000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "user_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "total_amount", "data_type": "NUMERIC", "nullable": false, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "status", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "created_at", "data_type": "TIMESTAMP", "nullable": false, "is_primary_key": false, "ordinal_position": 4}
+      ]
+    },
+    {
+      "name": "order_items",
+      "fingerprint": "ghi789",
+      "row_count": 600000,
+      "metadata": {"row_count": 600000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "order_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "product_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "qty", "data_type": "INTEGER", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "unit_price", "data_type": "NUMERIC", "nullable": false, "is_primary_key": false, "ordinal_position": 4}
+      ]
+    },
+    {
+      "name": "products",
+      "fingerprint": "jkl012",
+      "row_count": 5000,
+      "metadata": {"row_count": 5000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "name", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "category_id", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "price", "data_type": "NUMERIC", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "is_active", "data_type": "BOOLEAN", "nullable": false, "is_primary_key": false, "ordinal_position": 4}
+      ]
+    },
+    {
+      "name": "categories",
+      "fingerprint": "mno345",
+      "row_count": 50,
+      "metadata": {"row_count": 50},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "name", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "parent_id", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 2}
+      ]
+    },
+    {
+      "name": "payments",
+      "fingerprint": "pqr678",
+      "row_count": 180000,
+      "metadata": {"row_count": 180000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "order_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "amount", "data_type": "NUMERIC", "nullable": false, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "method", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "paid_at", "data_type": "TIMESTAMP", "nullable": true, "is_primary_key": false, "ordinal_position": 4}
+      ]
+    },
+    {
+      "name": "reviews",
+      "fingerprint": "stu901",
+      "row_count": 30000,
+      "metadata": {"row_count": 30000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "user_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "product_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "rating", "data_type": "INTEGER", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "comment", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 4},
+        {"name": "created_at", "data_type": "TIMESTAMP", "nullable": false, "is_primary_key": false, "ordinal_position": 5}
+      ]
+    },
+    {
+      "name": "campaign_clicks",
+      "fingerprint": "vwx234",
+      "row_count": 1500000,
+      "metadata": {"row_count": 1500000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "campaign_id", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "user_id", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "clicked_at", "data_type": "TIMESTAMP", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "utm_source", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 4}
+      ]
+    },
+    {
+      "name": "audit_log",
+      "fingerprint": "yza567",
+      "row_count": 5000000,
+      "metadata": {"row_count": 5000000},
+      "columns": [
+        {"name": "id", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "action", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "user_id", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 2},
+        {"name": "table_name", "data_type": "STRING", "nullable": false, "is_primary_key": false, "ordinal_position": 3},
+        {"name": "created_at", "data_type": "TIMESTAMP", "nullable": false, "is_primary_key": false, "ordinal_position": 4}
+      ]
+    },
+    {
+      "name": "app_config",
+      "fingerprint": "bcd890",
+      "row_count": 100,
+      "metadata": {"row_count": 100},
+      "columns": [
+        {"name": "key", "data_type": "STRING", "nullable": false, "is_primary_key": true, "ordinal_position": 0},
+        {"name": "value", "data_type": "STRING", "nullable": true, "is_primary_key": false, "ordinal_position": 1},
+        {"name": "updated_at", "data_type": "TIMESTAMP", "nullable": false, "is_primary_key": false, "ordinal_position": 2}
+      ]
+    }
+  ]
+}
