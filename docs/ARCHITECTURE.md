@@ -24,6 +24,9 @@ The core insight: most NL-to-SQL tools fail not because of the LLM, but because 
 | 10 | Concurrency | Sync-first API + ThreadPoolExecutor for internal parallelism |
 | 11 | Testing | MemoryConnector + JSON fixtures + retrieval eval set |
 | 12 | Domain-scoped retrieval | Tables tagged by business domain; retrieval pre-filters by domain before vector search to reduce noise and improve precision on large schemas |
+| 13 | Dialect-aware stats | `get_column_stats()` optional method on `ConnectorProtocol`; connectors own their SQL dialect (e.g., PostgreSQL uses `COUNT(DISTINCT …)`, BigQuery uses `APPROX_COUNT_DISTINCT`); returning `None` falls through to built-in BigQuery-style queries |
+| 14 | PK heuristic fallback | When a database doesn't expose PK constraints (e.g., BigQuery), `IntrospectionEngine` infers PKs via name heuristics; `pk_source: "inferred"` vs `"database"` metadata key tracks provenance |
+| 15 | Embedding model caching | The sentence-transformers model is loaded once per `SQLens` instance and stored in `self._embedding_fn`; `_resolve_retriever()` reuses the cached retriever via identity check, avoiding per-call model reloads |
 
 ---
 
@@ -387,7 +390,8 @@ from sqlens import SQLens
 
 # --- Initialize from a connector ---
 ctx = SQLens.from_bigquery(project="my-project", dataset="analytics")
-# Future: SQLens.from_postgresql(connection_string="...")
+ctx = SQLens.from_postgresql("postgresql://user:pass@host:5432/db")
+ctx = SQLens.from_postgresql("postgresql://user:pass@host:5432/db", schema="myschema")
 
 # --- Enrich (composable, incremental) ---
 ctx.enrich(
@@ -574,6 +578,44 @@ The default describer uses a layered approach:
 
 ---
 
+## Primary key inference
+
+Some databases (notably BigQuery) don't enforce or expose primary key constraints. `IntrospectionEngine` handles this by running a heuristic fallback when `connector.get_primary_keys()` returns an empty list.
+
+### Rules (applied in order, first match wins)
+
+| Rule | Pattern | Example |
+|------|---------|---------|
+| 1 | Column named exactly `id` | `id` in any table |
+| 2 | Column named `{singular_table}_id` | `user_id` in a `users` table |
+| 3 | First NOT NULL column with `_id` suffix (by ordinal position) | `account_id` if `id` and `user_id` are absent |
+
+If none of the rules match, no PK is inferred — the table remains without a primary key.
+
+### Metadata provenance
+
+The `pk_source` key in `table.metadata` records how the PK was determined:
+
+```python
+table.metadata["pk_source"]  # "database" | "inferred"
+```
+
+This lets consumers distinguish authoritative PKs from heuristically guessed ones. It also affects the relationship inferrer: `RelationsEnricher._find_target_pk()` accepts any available PK (including inferred ones), falling back to `"id"` if none exist.
+
+---
+
+## Dialect-aware statistics
+
+`StatsEnricher` uses a two-path design to support different SQL dialects:
+
+**Path 1 — Connector-native (preferred):** The enricher calls `connector.get_column_stats()`. If the connector returns a `ColumnStats` object, it's used directly. This lets each connector write dialect-correct SQL (e.g., `COUNT(DISTINCT …)` for PostgreSQL, standard casts).
+
+**Path 2 — BigQuery fallback:** If `get_column_stats()` returns `None`, the enricher falls back to BigQuery-style queries using `APPROX_COUNT_DISTINCT` and backtick column quoting.
+
+The base `ConnectorProtocol` provides a no-op default that returns `None`, so new connectors don't need to implement this method unless they want dialect-specific behavior.
+
+---
+
 ## Domain-scoped retrieval
 
 ### Problem
@@ -650,26 +692,32 @@ The `RetrievalResult` includes domain filter diagnostics so the consumer can ins
 
 ## Testing strategy
 
+The test suite has **68 unit tests** in `tests/unit/test_core.py`, organized into classes:
+
+| Class | Tests | Coverage |
+|-------|-------|---------|
+| `TestIntrospection` | 7 | MemoryConnector, table/column extraction |
+| `TestEnrichment` | 6 | Descriptions, stats, relations, samples, domains |
+| `TestRetrieval` | 7 | Keyword retriever, domain filter, catalog output |
+| `TestPersistence` | 4 | Save/load, fingerprints, merge |
+| `TestDomainScoped` | 4 | Domain filter, auto-detect, manual override |
+| `TestCosineRetriever` | 18 | Hash embedding, NumpyCosineRetriever, `_resolve_retriever` cascade |
+| `TestPKInference` | 7 | All three heuristic rules, DB PKs bypass, `_find_target_pk` |
+| `TestPostgreSQLConnector` | 11 | qualify_table_name, stats dialect, factory wiring, pk_source |
+| `TestMisc` | 4 | Serializers, prompt output, level filtering |
+
+Key testing patterns:
+- **MemoryConnector**: in-memory connector for zero-dep unit tests
+- **psycopg2 mocking**: `patch.dict("sys.modules", {"psycopg2": mock_pg})` tests PostgreSQL without a real DB
+- **`pytest.mark.skipif(_NUMPY_AVAILABLE)`**: cosine tests skipped if numpy not installed
+- **Deterministic embeddings**: `_numpy_hash_embedding` used instead of sentence-transformers model in tests
+
 ```
 tests/
-├── fixtures/
-│   └── ecommerce_catalog.json     # 10-15 table e-commerce schema
 ├── unit/
-│   ├── test_introspection.py      # MemoryConnector-based
-│   ├── test_descriptions.py       # rule-based heuristics
-│   ├── test_stats.py              # stats collector
-│   ├── test_relations.py          # relationship inference
-│   ├── test_samples.py            # sample selector
-│   ├── test_domains.py            # domain auto-tagging + manual overrides
-│   ├── test_domain_filter.py      # domain filter + auto-detect classifier
-│   ├── test_catalog.py            # persistence, fingerprinting, levels
-│   ├── test_retrieval.py          # all 3 retriever tiers
-│   └── test_serializers.py        # to_dict, to_prompt, level filtering
-├── integration/
-│   └── test_bigquery.py           # real BQ, CI only (@pytest.mark.integration)
-└── evals/
-    ├── retrieval_accuracy.py      # (query, expected_tables) eval set
-    └── domain_classification.py   # (query, expected_domain) eval set
+│   └── test_core.py               # 68 tests — all connectors, enrichers, retrievers
+└── integration/
+    └── test_bigquery.py           # real BQ, CI only (@pytest.mark.integration)
 ```
 
 ---

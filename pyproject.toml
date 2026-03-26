@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sqlens"
-version = "0.1.0"
+version = "0.6.0"
 description = "Schema intelligence layer for LLMs — enriched database context, not SQL generation."
 readme = "README.md"
 license = "MIT"
@@ -30,6 +30,7 @@ numpy = ["numpy>=1.24"]
 vector = ["chromadb>=0.4", "sentence-transformers>=2.0"]
 all = [
     "google-cloud-bigquery>=3.0",
+    "psycopg2-binary>=2.9",
     "numpy>=1.24",
     "chromadb>=0.4",
     "sentence-transformers>=2.0",

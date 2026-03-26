@@ -5,7 +5,8 @@
       "Bash(pip3 install:*)",
       "Bash(ls:*)",
       "Bash(pip install:*)",
-      "Bash(pip show:*)"
+      "Bash(pip show:*)",
+      "Bash(which python3:*)"
     ]
   }
 }
