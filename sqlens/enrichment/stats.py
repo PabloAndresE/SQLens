@@ -94,7 +94,22 @@ class StatsEnricher(EnricherProtocol):
         col: Any,
         connector: ConnectorProtocol,
     ) -> ColumnStats:
-        """Collect stats for a single column."""
+        """Collect stats for a single column.
+
+        Tries connector.get_column_stats() first (dialect-specific SQL).
+        Falls back to BigQuery-style queries (APPROX_COUNT_DISTINCT, backtick
+        quoting) for connectors that return None.
+        """
+        # Connector-native path (PostgreSQL, etc.)
+        native = connector.get_column_stats(
+            table_name, col.name, col.data_type,
+            include_top_values=self._include_top_values,
+            top_n=self._top_n,
+        )
+        if native is not None:
+            return native
+
+        # BigQuery fallback: APPROX_COUNT_DISTINCT + backtick quoting
         stats = ColumnStats()
         fqn = connector.qualify_table_name(table_name)
 

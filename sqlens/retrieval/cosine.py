@@ -76,12 +76,13 @@ class NumpyCosineRetriever(RetrieverProtocol):
         similarities = self._embeddings @ query_vec
 
         # Apply candidate filter
+        candidate_set: set[str] | None = None
         if candidate_tables is not None:
             candidate_set = set(candidate_tables)
             mask = np.array([
                 name in candidate_set for name in self._table_names
             ])
-            similarities = np.where(mask, similarities, -1.0)
+            similarities = np.where(mask, similarities, -np.inf)
 
         # Get top-N indices
         top_indices = np.argsort(similarities)[::-1][:max_tables]
@@ -90,9 +91,16 @@ class NumpyCosineRetriever(RetrieverProtocol):
         scores: dict[str, float] = {}
         for idx in top_indices:
             score = float(similarities[idx])
-            if score <= 0 and candidate_tables is None:
-                break  # skip zeros only when NO domain filter is active
             name = self._table_names[idx]
+
+            # Skip non-candidates (masked to -inf)
+            if candidate_set is not None and name not in candidate_set:
+                continue
+
+            # Skip zero/negative scores only when no domain filter is active
+            if score <= 0 and candidate_set is None:
+                break
+
             table = self._catalog.get_table(name)
             if table:
                 tables.append(table)

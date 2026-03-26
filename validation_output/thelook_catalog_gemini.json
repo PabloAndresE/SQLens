@@ -13,6 +13,7 @@
     {
       "name": "distribution_centers",
       "fingerprint": "598703ba0a85b126",
+      "description": "The 'distribution_centers' table stores information about distribution centers, including their unique ID, name, geographical coordinates (latitude and longitude), and a geometry column representing their spatial location.",
       "row_count": 10,
       "metadata": {
         "row_count": 10,
@@ -108,7 +109,8 @@
           "data_type": "GEOGRAPHY",
           "nullable": true,
           "is_primary_key": false,
-          "ordinal_position": 5
+          "ordinal_position": 5,
+          "description": "Stores the geographic location of the distribution center."
         }
       ],
       "sample_data": [
@@ -138,6 +140,7 @@
     {
       "name": "events",
       "fingerprint": "db7a5c2dc990c955",
+      "description": "The 'events' table stores user interaction data including event identification, user and session details, timestamps, location information, browser details, traffic source, requested URI, and the type of event.",
       "row_count": 2415634,
       "domains": [
         "analytics",
@@ -305,6 +308,7 @@
           "nullable": true,
           "is_primary_key": false,
           "ordinal_position": 11,
+          "description": "The source of the traffic that led to the event.",
           "stats": {
             "cardinality": 5,
             "null_pct": 0.0,
@@ -323,6 +327,7 @@
           "nullable": true,
           "is_primary_key": false,
           "ordinal_position": 12,
+          "description": "The URI associated with the event.",
           "stats": {
             "cardinality": 35518,
             "null_pct": 0.0
@@ -409,6 +414,7 @@
     {
       "name": "inventory_items",
       "fingerprint": "69d75b8d4040546a",
+      "description": "The `inventory_items` table tracks individual inventory units with details like ID, product information, timestamps for creation and sale, cost, category, name, brand, retail price, department, SKU, and distribution center ID.",
       "row_count": 488313,
       "domains": [
         "products"
@@ -553,6 +559,7 @@
           "nullable": true,
           "is_primary_key": false,
           "ordinal_position": 10,
+          "description": "The department the product belongs to.",
           "stats": {
             "cardinality": 2,
             "null_pct": 0.0,
@@ -568,6 +575,7 @@
           "nullable": true,
           "is_primary_key": false,
           "ordinal_position": 11,
+          "description": "The unique stock keeping unit identifier for the product.",
           "stats": {
             "cardinality": 28939,
             "null_pct": 0.0
@@ -653,6 +661,7 @@
     {
       "name": "order_items",
       "fingerprint": "a5dbd5612b5f5aba",
+      "description": "The 'order_items' table tracks individual items within an order, detailing relationships to users, products, inventory, status, timestamps for key events (creation, shipping, delivery, return), and the sale price.",
       "row_count": 180791,
       "domains": [
         "products",
@@ -905,6 +914,7 @@
     {
       "name": "orders",
       "fingerprint": "0a40b2ffb0309e42",
+      "description": "The 'orders' table stores order information including a unique order identifier, the associated user ID, order status, user gender, creation, return, shipping, and delivery timestamps, and the number of items in the order.",
       "row_count": 125248,
       "domains": [
         "sales",
@@ -1106,6 +1116,7 @@
     {
       "name": "products",
       "fingerprint": "b527d38edb366cfe",
+      "description": "The `products` table stores information about each product, including its ID, cost, category, name, brand, retail price, department, SKU, and distribution center ID.",
       "row_count": 29120,
       "domains": [
         "products"
@@ -1301,6 +1312,7 @@
     {
       "name": "users",
       "fingerprint": "ff572c493d180930",
+      "description": "The 'users' table stores user data including personal details like name, contact information, location (both textual and geometric), demographic information, source of acquisition, and timestamps.",
       "row_count": 100000,
       "domains": [
         "users"
@@ -1521,6 +1533,7 @@
           "nullable": true,
           "is_primary_key": false,
           "ordinal_position": 14,
+          "description": "The marketing channel through which the user arrived.",
           "stats": {
             "cardinality": 5,
             "null_pct": 0.0,
@@ -1552,7 +1565,8 @@
           "data_type": "GEOGRAPHY",
           "nullable": true,
           "is_primary_key": false,
-          "ordinal_position": 16
+          "ordinal_position": 16,
+          "description": "The geographical location of the user."
         }
       ],
       "sample_data": [

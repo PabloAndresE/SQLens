@@ -47,6 +47,8 @@ class SQLens:
         self._catalog = catalog
         self._connector = connector
         self._retriever: Optional[RetrieverProtocol] = None
+        self._retriever_method: Optional[str] = None  # effective method of cached retriever
+        self._embedding_fn: Optional[Callable[[str], list[float]]] = None  # cached model instance
         self._llm_callable: Optional[Callable[[str], str]] = None
 
     # ------------------------------------------------------------------
@@ -76,6 +78,30 @@ class SQLens:
             dataset=dataset,
             billing_project=billing_project,
             credentials=credentials,
+        )
+        engine = IntrospectionEngine(connector)
+        catalog = engine.introspect(source=connector.source)
+        return cls(catalog=catalog, connector=connector)
+
+    @classmethod
+    def from_postgresql(
+        cls,
+        connection_string: str,
+        schema: str = "public",
+    ) -> SQLens:
+        """Create a SQLens instance connected to a PostgreSQL database.
+
+        Args:
+            connection_string: A libpq connection string.
+                e.g. "postgresql://user:pass@host:5432/dbname"
+                or   "host=localhost dbname=mydb user=postgres"
+            schema: PostgreSQL schema to introspect. Defaults to 'public'.
+        """
+        from sqlens.connectors.postgresql import PostgreSQLConnector
+
+        connector = PostgreSQLConnector(
+            connection_string=connection_string,
+            schema=schema,
         )
         engine = IntrospectionEngine(connector)
         catalog = engine.introspect(source=connector.source)
@@ -158,6 +184,7 @@ class SQLens:
 
         # Rebuild retriever index after enrichment
         self._retriever = None
+        self._retriever_method = None
 
         return self
 
@@ -229,10 +256,15 @@ class SQLens:
         """
         retriever = self._resolve_retriever(retrieval)
 
-        # Build index if needed
-        if self._retriever is None or retriever is not self._retriever:
+        # Build index if needed (retriever is a new instance, not the cached one)
+        if retriever is not self._retriever:
             retriever.build_index(self._catalog)
             self._retriever = retriever
+            try:
+                from sqlens.retrieval.cosine import NumpyCosineRetriever
+                self._retriever_method = "cosine" if isinstance(retriever, NumpyCosineRetriever) else "keyword"
+            except ImportError:
+                self._retriever_method = "keyword"
 
         # Domain filtering
         candidate_tables = None
@@ -283,14 +315,21 @@ class SQLens:
                 "Use SQLens.set_retriever(VectorDBRetriever(embedding_fn=...)) to configure it."
             )
 
+        # Reuse cached retriever: no forced override, or forced matches cached method
+        if self._retriever is not None:
+            if forced is None or forced == self._retriever_method:
+                return self._retriever
+
         if forced == "keyword":
             return KeywordRetriever()
 
         # forced="cosine" or auto-detect
         try:
             from sqlens.retrieval.cosine import NumpyCosineRetriever, _build_default_embedding_fn
-            embed_fn = _build_default_embedding_fn()
-            retriever = NumpyCosineRetriever(embedding_fn=embed_fn)
+            # Cache the embedding fn so the model is only loaded once per SQLens instance
+            if self._embedding_fn is None:
+                self._embedding_fn = _build_default_embedding_fn()
+            retriever = NumpyCosineRetriever(embedding_fn=self._embedding_fn)
             if retriever.is_available():
                 return retriever
         except ImportError:

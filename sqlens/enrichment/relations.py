@@ -146,6 +146,6 @@ class RelationsEnricher(EnricherProtocol):
     def _find_target_pk(self, table_name: str, pk_map: dict[str, list[str]]) -> str:
         """Find the primary key column for the target table, defaulting to 'id'."""
         pks = pk_map.get(table_name, [])
-        if len(pks) == 1:
+        if pks:
             return pks[0]
         return "id"

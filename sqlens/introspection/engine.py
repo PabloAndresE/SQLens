@@ -83,6 +83,12 @@ class IntrospectionEngine:
                 row_count=row_count,
                 metadata=metadata,
             )
+
+            if pk_names:
+                table.metadata["pk_source"] = "database"
+            else:
+                IntrospectionEngine._infer_primary_keys(table)
+
             table.fingerprint = table.compute_fingerprint()
             return table
 
@@ -104,3 +110,49 @@ class IntrospectionEngine:
             tables=tables,
             extracted_at=datetime.now(timezone.utc),
         )
+
+    @staticmethod
+    def _singularize(name: str) -> str:
+        """Return a simple singular form of an English table name."""
+        if name.endswith("ies"):
+            return name[:-3] + "y"
+        if name.endswith("ses") or name.endswith("xes") or name.endswith("zes"):
+            return name[:-2]
+        if name.endswith("s") and not name.endswith("ss"):
+            return name[:-1]
+        return name
+
+    @staticmethod
+    def _infer_primary_keys(table: Table) -> None:
+        """Infer PKs by naming convention when the database didn't expose them.
+
+        Priority (first match wins):
+        1. Column named exactly 'id' → is_primary_key = True
+        2. Column named '{singular_table_name}_id' → is_primary_key = True
+        3. First NOT NULL column ending with '_id' by ordinal position
+
+        Sets table.metadata['pk_source'] = 'inferred' on a match.
+        """
+        # Rule 1: exact 'id' column
+        for col in table.columns:
+            if col.name.lower() == "id":
+                col.is_primary_key = True
+                table.metadata["pk_source"] = "inferred"
+                return
+
+        # Rule 2: {singular_table_name}_id
+        singular = IntrospectionEngine._singularize(table.name)
+        candidate = f"{singular}_id"
+        for col in table.columns:
+            if col.name.lower() == candidate:
+                col.is_primary_key = True
+                table.metadata["pk_source"] = "inferred"
+                return
+
+        # Rule 3: first NOT NULL column ending with '_id' by ordinal position
+        sorted_cols = sorted(table.columns, key=lambda c: c.ordinal_position)
+        for col in sorted_cols:
+            if col.name.lower().endswith("_id") and not col.nullable:
+                col.is_primary_key = True
+                table.metadata["pk_source"] = "inferred"
+                return
