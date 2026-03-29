@@ -2,6 +2,35 @@
 
 All notable changes to sqlens are documented here.
 
+## [0.7.0] — 2026-03-28
+
+### Added
+- **SQLite Connector** — `SQLiteConnector` using Python's built-in `sqlite3` (zero external deps)
+  - `PRAGMA table_info()` / `PRAGMA foreign_key_list()` for metadata extraction
+  - Dialect-aware `get_column_stats()` with SQLite-compatible SQL
+  - `check_same_thread=False` for compatibility with parallel introspection engine
+- **MySQL Connector** — `MySQLConnector` using `mysql-connector-python`
+  - `information_schema.COLUMNS`, `TABLE_CONSTRAINTS`, `KEY_COLUMN_USAGE`
+  - URI parsing with `mysql://`, `mysql+mysqlconnector://` scheme support
+  - Dialect-aware stats: `CAST(... AS CHAR)`, `GREATEST()` for null_pct
+- `SQLens.from_sqlite(path)` factory method
+- `SQLens.from_mysql(connection_string, database=...)` factory method
+- CLI: `sqlens inspect --sqlite PATH` and `sqlens inspect --mysql URI`
+- CLI: `--database` flag for MySQL database name override
+- **Integration test suite** — 28 end-to-end tests using real SQLite database
+  - SQLite fixture: 10 tables, real FKs, sample data (`tests/fixtures/ecommerce.db`)
+  - `scripts/create_sqlite_fixture.py` to regenerate the fixture
+  - Full pipeline coverage: inspect -> enrich -> save -> load -> retrieve
+- 22 new unit tests: 13 for SQLiteConnector, 9 for MySQLConnector (mocked)
+
+### Changed
+- `pyproject.toml`: version bumped to 0.7.0
+- `pyproject.toml`: new extra `mysql = ["mysql-connector-python>=8.0"]`, added to `[all]`
+- `pyproject.toml`: updated keywords to include postgresql, mysql, sqlite
+- Total test count: 68 -> 118
+
+---
+
 ## [0.6.0] — 2026-03-26
 
 ### Added

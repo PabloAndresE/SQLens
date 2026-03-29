@@ -721,3 +721,194 @@ class TestPostgreSQLConnector:
         connector = MemoryConnector(tables={}, source="memory://test")
         result = connector.get_column_stats("t", "col", "STRING")
         assert result is None
+
+
+# ---------------------------------------------------------------------------
+# SQLiteConnector (unit tests — in-memory database)
+# ---------------------------------------------------------------------------
+
+class TestSQLiteConnector:
+    """Unit tests for SQLiteConnector using an in-memory SQLite database."""
+
+    def _make_connector(self):
+        from sqlens.connectors.sqlite import SQLiteConnector
+        conn = SQLiteConnector(":memory:")
+        # Create a small schema directly
+        conn._conn.executescript("""
+            CREATE TABLE users (
+                id      INTEGER PRIMARY KEY,
+                email   TEXT    NOT NULL UNIQUE,
+                name    TEXT
+            );
+            CREATE TABLE orders (
+                id      INTEGER PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                amount  REAL    NOT NULL
+            );
+            INSERT INTO users VALUES (1, 'a@b.com', 'Alice');
+            INSERT INTO users VALUES (2, 'c@d.com', 'Bob');
+            INSERT INTO orders VALUES (1, 1, 99.99);
+        """)
+        return conn
+
+    def test_get_tables(self):
+        connector = self._make_connector()
+        tables = connector.get_tables()
+        assert set(tables) == {"users", "orders"}
+
+    def test_get_columns(self):
+        connector = self._make_connector()
+        cols = connector.get_columns("users")
+        assert len(cols) == 3
+        id_col = next(c for c in cols if c.name == "id")
+        assert id_col.is_primary_key is True
+        assert id_col.data_type == "INTEGER"
+
+    def test_get_primary_keys(self):
+        connector = self._make_connector()
+        pks = connector.get_primary_keys("users")
+        assert pks == ["id"]
+
+    def test_get_foreign_keys(self):
+        connector = self._make_connector()
+        fks = connector.get_foreign_keys("orders")
+        assert len(fks) == 1
+        assert fks[0].source_column == "user_id"
+        assert fks[0].target_table == "users"
+        assert fks[0].target_column == "id"
+
+    def test_get_table_metadata_row_count(self):
+        connector = self._make_connector()
+        meta = connector.get_table_metadata("users")
+        assert meta["row_count"] == 2
+
+    def test_execute_query(self):
+        connector = self._make_connector()
+        rows = connector.execute_query("SELECT COUNT(*) AS cnt FROM users")
+        assert rows[0]["cnt"] == 2
+
+    def test_qualify_table_name(self):
+        connector = self._make_connector()
+        assert connector.qualify_table_name("users") == '"users"'
+
+    def test_source_identifier(self):
+        connector = self._make_connector()
+        assert connector.source == "sqlite://:memory:"
+
+    def test_get_column_stats(self):
+        connector = self._make_connector()
+        stats = connector.get_column_stats("users", "email", "TEXT")
+        assert stats is not None
+        assert stats.cardinality == 2
+        assert stats.null_pct == 0.0
+
+    def test_get_column_stats_numeric(self):
+        connector = self._make_connector()
+        stats = connector.get_column_stats("orders", "amount", "REAL")
+        assert stats is not None
+        assert stats.min_value is not None
+        assert stats.max_value is not None
+
+    def test_from_sqlite_factory(self):
+        ctx = SQLens.from_sqlite(":memory:")
+        # Empty in-memory DB → 0 tables
+        assert ctx.table_count == 0
+
+    def test_introspect_with_sqlite(self):
+        from sqlens.connectors.sqlite import SQLiteConnector
+        connector = self._make_connector()
+        ctx = SQLens.from_connector(connector)
+        assert ctx.table_count == 2
+        assert "users" in ctx.tables
+        assert "orders" in ctx.tables
+
+    def test_enrich_with_sqlite(self):
+        from sqlens.connectors.sqlite import SQLiteConnector
+        connector = self._make_connector()
+        ctx = SQLens.from_connector(connector)
+        ctx.enrich(descriptions=True, relations=True, domains=True)
+        assert "descriptions" in ctx.enrichers_applied
+        assert "relations" in ctx.enrichers_applied
+        assert "domains" in ctx.enrichers_applied
+
+
+# ---------------------------------------------------------------------------
+# MySQLConnector (unit tests — mocked mysql.connector)
+# ---------------------------------------------------------------------------
+
+class TestMySQLConnector:
+    """Unit tests for MySQLConnector using a fully-mocked mysql.connector."""
+
+    def _make_mock_mysql(self, fetchall_return=None):
+        mock_mysql = MagicMock()
+        mock_conn = MagicMock()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchall.return_value = fetchall_return or []
+        mock_conn.cursor.return_value = mock_cursor
+        mock_mysql.connect.return_value = mock_conn
+        return mock_mysql, mock_conn, mock_cursor
+
+    def _make_connector(self, database=None, fetchall_return=None):
+        mock_mysql, mock_conn, mock_cursor = self._make_mock_mysql(fetchall_return)
+        mock_cursor.fetchall.return_value = fetchall_return or []
+        with patch.dict("sys.modules", {"mysql": MagicMock(), "mysql.connector": mock_mysql}):
+            from sqlens.connectors.mysql import MySQLConnector
+            connector = MySQLConnector(
+                "mysql://user:pass@localhost/testdb",
+                database=database,
+            )
+        return connector
+
+    def test_qualify_table_name(self):
+        connector = self._make_connector()
+        assert connector.qualify_table_name("users") == "`testdb`.`users`"
+
+    def test_database_extracted_from_uri(self):
+        connector = self._make_connector()
+        assert connector._database == "testdb"
+
+    def test_database_override(self):
+        connector = self._make_connector(database="other_db")
+        assert connector._database == "other_db"
+
+    def test_source_identifier(self):
+        connector = self._make_connector()
+        assert "mysql://" in connector.source
+        assert "localhost" in connector.source
+        assert "testdb" in connector.source
+
+    def test_constructor_raises_without_mysql_connector(self):
+        with patch.dict("sys.modules", {"mysql": None, "mysql.connector": None}):
+            from sqlens.connectors.mysql import MySQLConnector
+            with pytest.raises(ImportError, match="mysql-connector-python"):
+                MySQLConnector("mysql://localhost/test")
+
+    def test_from_mysql_factory(self):
+        mock_mysql, mock_conn, mock_cursor = self._make_mock_mysql(fetchall_return=[])
+        mock_cursor.fetchall.return_value = []
+        with patch.dict("sys.modules", {"mysql": MagicMock(), "mysql.connector": mock_mysql}):
+            ctx = SQLens.from_mysql(
+                "mysql://user:pass@localhost/testdb",
+            )
+        assert isinstance(ctx, SQLens)
+        assert ctx.table_count == 0
+
+    def test_parse_connection_with_explicit_database(self):
+        from sqlens.connectors.mysql import MySQLConnector
+        db, args = MySQLConnector._parse_connection("mysql://user:pass@host:3306/mydb", None)
+        assert db == "mydb"
+        assert args["host"] == "host"
+        assert args["port"] == 3306
+        assert args["user"] == "user"
+        assert args["password"] == "pass"
+
+    def test_parse_connection_database_override(self):
+        from sqlens.connectors.mysql import MySQLConnector
+        db, args = MySQLConnector._parse_connection("mysql://user@host/original", "override")
+        assert db == "override"
+        assert args["database"] == "override"
+
+    def test_parse_connection_no_database_raises(self):
+        from sqlens.connectors.mysql import MySQLConnector
+        with pytest.raises(ValueError, match="database name"):
+            MySQLConnector._parse_connection("mysql://user@host/", None)

@@ -7,7 +7,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+">
-  <img src="https://img.shields.io/badge/version-0.6.0-green" alt="version">
+  <img src="https://img.shields.io/badge/version-0.7.0-green" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT License">
 </p>
 
@@ -43,13 +43,16 @@ SQLens solves the **context problem** and stays out of the **generation problem*
 ## Install
 
 ```bash
-pip install sqlens                   # core — keyword retrieval only
+pip install sqlens                   # core — keyword retrieval, SQLite built-in
 pip install sqlens[bigquery]         # + BigQuery connector
 pip install sqlens[postgresql]       # + PostgreSQL connector
+pip install sqlens[mysql]            # + MySQL / MariaDB connector
 pip install sqlens[numpy]            # + cosine similarity retrieval
 pip install sqlens[vector]           # + chromadb vector search
 pip install sqlens[all]              # everything
 ```
+
+SQLite support requires **zero extra dependencies** — `sqlite3` ships with Python.
 
 ---
 
@@ -58,9 +61,11 @@ pip install sqlens[all]              # everything
 ```python
 from sqlens import SQLens
 
-# 1. Connect and introspect
-ctx = SQLens.from_bigquery(project="my-project", dataset="analytics")
+# 1. Connect and introspect — pick your database
+ctx = SQLens.from_sqlite("./my_database.db")
+# ctx = SQLens.from_bigquery(project="my-project", dataset="analytics")
 # ctx = SQLens.from_postgresql("postgresql://user:pass@localhost:5432/mydb")
+# ctx = SQLens.from_mysql("mysql://user:pass@localhost:3306/mydb")
 
 # 2. Enrich once, save to disk
 ctx.enrich(
@@ -92,9 +97,9 @@ print(context.to_dict())    # structured dict / JSON
 ## How it works
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Database  (BigQuery · PostgreSQL · custom connector)    │
-└───────────────────────────┬─────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│  Database  (SQLite · PostgreSQL · MySQL · BigQuery · custom)         │
+└──────────────────────────────────┬───────────────────────────────────┘
                             │
                             ▼
               ┌─────────────────────────┐
@@ -185,7 +190,7 @@ ctx.enrich(descriptions=lambda prompt: model.generate_content(prompt).text)
 
 ### Stats
 
-Column-level statistics collected per table. Dialect-aware: each connector runs native SQL (`COUNT(DISTINCT …)` on PostgreSQL, `APPROX_COUNT_DISTINCT` on BigQuery).
+Column-level statistics collected per table. Dialect-aware: each connector runs native SQL (`COUNT(DISTINCT …)` on PostgreSQL/SQLite/MySQL, `APPROX_COUNT_DISTINCT` on BigQuery).
 
 ```python
 ctx.enrich(stats=True)
@@ -375,9 +380,14 @@ ctx.save("./catalog.json")
 
 ```bash
 # Introspect a database and save the catalog
-sqlens inspect --bigquery my-project.analytics -o catalog.json
+sqlens inspect --sqlite ./my_database.db -o catalog.json
 sqlens inspect --postgresql "postgresql://user:pass@host/db" -o catalog.json
+sqlens inspect --mysql "mysql://user:pass@host/db" -o catalog.json
+sqlens inspect --bigquery my-project.analytics -o catalog.json
+
+# PostgreSQL with custom schema / MySQL with database override
 sqlens inspect --postgresql "..." --schema reporting -o catalog.json
+sqlens inspect --mysql "mysql://user@host/db" --database other_db -o catalog.json
 
 # Enrich (any combination of flags)
 sqlens enrich catalog.json --descriptions --stats --relations --samples 3 --domains

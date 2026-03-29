@@ -108,6 +108,43 @@ class SQLens:
         return cls(catalog=catalog, connector=connector)
 
     @classmethod
+    def from_sqlite(cls, path: str | Path) -> SQLens:
+        """Create a SQLens instance connected to a SQLite database.
+
+        Args:
+            path: Path to the SQLite database file. Use ":memory:" for in-memory DBs.
+        """
+        from sqlens.connectors.sqlite import SQLiteConnector
+
+        connector = SQLiteConnector(path=path)
+        engine = IntrospectionEngine(connector)
+        catalog = engine.introspect(source=connector.source)
+        return cls(catalog=catalog, connector=connector)
+
+    @classmethod
+    def from_mysql(
+        cls,
+        connection_string: str,
+        database: str | None = None,
+    ) -> SQLens:
+        """Create a SQLens instance connected to a MySQL / MariaDB database.
+
+        Args:
+            connection_string: A MySQL connection URI.
+                e.g. "mysql://user:pass@host:3306/dbname"
+            database: Database name to introspect. If None, extracted from the URI.
+        """
+        from sqlens.connectors.mysql import MySQLConnector
+
+        connector = MySQLConnector(
+            connection_string=connection_string,
+            database=database,
+        )
+        engine = IntrospectionEngine(connector)
+        catalog = engine.introspect(source=connector.source)
+        return cls(catalog=catalog, connector=connector)
+
+    @classmethod
     def from_connector(cls, connector: ConnectorProtocol, source: str = "") -> SQLens:
         """Create a SQLens instance from any ConnectorProtocol implementation."""
         src = source or getattr(connector, "source", "custom://unknown")

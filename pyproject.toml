@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sqlens"
-version = "0.6.0"
+version = "0.7.0"
 description = "Schema intelligence layer for LLMs — enriched database context, not SQL generation."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [{ name = "Pablo Andrés" }]
-keywords = ["sql", "llm", "schema", "context", "rag", "bigquery", "database"]
+keywords = ["sql", "llm", "schema", "context", "rag", "bigquery", "postgresql", "mysql", "sqlite", "database"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -26,11 +26,13 @@ classifiers = [
 [project.optional-dependencies]
 bigquery = ["google-cloud-bigquery>=3.0"]
 postgresql = ["psycopg2-binary>=2.9"]
+mysql = ["mysql-connector-python>=8.0"]
 numpy = ["numpy>=1.24"]
 vector = ["chromadb>=0.4", "sentence-transformers>=2.0"]
 all = [
     "google-cloud-bigquery>=3.0",
     "psycopg2-binary>=2.9",
+    "mysql-connector-python>=8.0",
     "numpy>=1.24",
     "chromadb>=0.4",
     "sentence-transformers>=2.0",

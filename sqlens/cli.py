@@ -3,6 +3,8 @@
 Commands:
     sqlens inspect  --bigquery PROJECT.DATASET [-o catalog.json]
     sqlens inspect  --postgresql "postgresql://..." [-o catalog.json]
+    sqlens inspect  --mysql "mysql://..." [-o catalog.json]
+    sqlens inspect  --sqlite path/to/db.sqlite [-o catalog.json]
     sqlens enrich   catalog.json --descriptions --stats --relations --samples 3 --domains
     sqlens context  catalog.json "query" [--max-tables 5] [--level standard] [--domain auto]
 """
@@ -67,8 +69,29 @@ def cmd_inspect(args: argparse.Namespace) -> None:
         except Exception as e:
             _err(str(e))
 
+    elif args.mysql:
+        database = args.database or None
+        _log(f"connecting to MySQL database={database or '(from URI)'}", args.verbose)
+        try:
+            ctx = SQLens.from_mysql(
+                connection_string=args.mysql,
+                database=database,
+            )
+        except Exception as e:
+            _err(str(e))
+
+    elif args.sqlite:
+        _log(f"connecting to SQLite {args.sqlite}", args.verbose)
+        try:
+            ctx = SQLens.from_sqlite(path=args.sqlite)
+        except Exception as e:
+            _err(str(e))
+
     else:
-        _err("specify --bigquery PROJECT.DATASET or --postgresql CONNECTION_STRING")
+        _err(
+            "specify --bigquery PROJECT.DATASET, --postgresql DSN, "
+            "--mysql URI, or --sqlite PATH"
+        )
 
     elapsed = time.time() - t0
     output = args.output or "catalog.json"
@@ -220,6 +243,16 @@ def _build_parser() -> argparse.ArgumentParser:
         metavar="DSN",
         help='PostgreSQL DSN, e.g. "postgresql://user:pass@host/db"',
     )
+    src.add_argument(
+        "--mysql",
+        metavar="URI",
+        help='MySQL URI, e.g. "mysql://user:pass@host/db"',
+    )
+    src.add_argument(
+        "--sqlite",
+        metavar="PATH",
+        help="path to a SQLite database file",
+    )
     p_inspect.add_argument(
         "--billing-project",
         metavar="PROJECT",
@@ -230,6 +263,12 @@ def _build_parser() -> argparse.ArgumentParser:
         metavar="SCHEMA",
         default="public",
         help="PostgreSQL schema to introspect (default: public)",
+    )
+    p_inspect.add_argument(
+        "--database",
+        metavar="DATABASE",
+        default=None,
+        help="MySQL database name (overrides the one in the URI)",
     )
     p_inspect.add_argument(
         "-o", "--output",
