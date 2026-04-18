@@ -48,9 +48,9 @@ dev = [
 sqlens = "sqlens.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/pabloandr/sqlens"
-Documentation = "https://github.com/pabloandr/sqlens#readme"
-Issues = "https://github.com/pabloandr/sqlens/issues"
+Homepage = "https://github.com/PabloAndresE/SQLens"
+Documentation = "https://github.com/PabloAndresE/SQLens#readme"
+Issues = "https://github.com/PabloAndresE/SQLens/issues"
 
 [tool.ruff]
 target-version = "py310"

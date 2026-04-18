@@ -424,4 +424,4 @@ class SQLens:
 
 
 __all__ = ["SQLens"]
-__version__ = "0.1.0"
+__version__ = "0.7.0"
