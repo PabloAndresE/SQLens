@@ -131,8 +131,13 @@ class DomainsEnricher(EnricherProtocol):
                     detected = [d.strip() for d in response.split(",") if d.strip() in all_domains]
                     if detected:
                         table.domains = sorted(detected)
-                except Exception:
-                    pass
+                except Exception as e:
+                    import warnings
+                    warnings.warn(
+                        f"LLM domain classification failed for '{table.name}': {e}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
 
         if "domains" not in catalog.enrichers_applied:
             catalog.enrichers_applied.append("domains")

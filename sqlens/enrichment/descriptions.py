@@ -319,8 +319,13 @@ class DescriptionsEnricher(EnricherProtocol):
                     try:
                         response = self._llm(prompt)
                         self._parse_llm_response(response, undescribed)
-                    except Exception:
-                        pass  # LLM failure is non-fatal
+                    except Exception as e:
+                        import warnings
+                        warnings.warn(
+                            f"LLM description failed for table '{table.name}': {e}",
+                            RuntimeWarning,
+                            stacklevel=2,
+                        )
 
                 if table.description is None:
                     prompt = (
@@ -330,8 +335,13 @@ class DescriptionsEnricher(EnricherProtocol):
                     )
                     try:
                         table.description = self._llm(prompt).strip()
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        import warnings
+                        warnings.warn(
+                            f"LLM table description failed for '{table.name}': {e}",
+                            RuntimeWarning,
+                            stacklevel=2,
+                        )
 
         if "descriptions" not in catalog.enrichers_applied:
             catalog.enrichers_applied.append("descriptions")
