@@ -33,12 +33,12 @@ The core insight: most NL-to-SQL tools fail not because of the LLM, but because 
 ## Pipeline overview
 
 ```
-┌─────────────┐  ┌─────────────┐  ┌─────────────┐
-│  BigQuery    │  │ PostgreSQL  │  │   Custom     │
-│  Connector   │  │ Connector   │  │  Connector   │
-└──────┬───────┘  └──────┬──────┘  └──────┬───────┘
-       │                 │                 │
-       └────────────┬────┴─────────────────┘
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  BigQuery    │  │ PostgreSQL  │  │   MySQL     │  │   SQLite    │  │   Custom    │
+│  Connector   │  │ Connector   │  │  Connector  │  │  Connector  │  │  Connector  │
+└──────┬───────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                 │                 │                 │                │
+       └────────────┬────┴────────────┬────┴─────────────────┘────────────────┘
                     ▼
         ┌───────────────────────┐
         │  Introspection Engine │
@@ -93,7 +93,10 @@ sqlens/
 ├── connectors/
 │   ├── base.py                  # ConnectorProtocol (ABC)
 │   ├── bigquery.py              # BigQueryConnector
-│   └── postgresql.py            # PostgreSQLConnector (v0.5)
+│   ├── postgresql.py            # PostgreSQLConnector (v0.5)
+│   ├── mysql.py                 # MySQLConnector (v0.7)
+│   ├── sqlite.py                # SQLiteConnector (v0.7)
+│   └── memory.py                # MemoryConnector (testing)
 ├── introspection/
 │   └── engine.py                # IntrospectionEngine
 ├── enrichment/
@@ -692,7 +695,7 @@ The `RetrievalResult` includes domain filter diagnostics so the consumer can ins
 
 ## Testing strategy
 
-The test suite has **68 unit tests** in `tests/unit/test_core.py`, organized into classes:
+The test suite has **118 tests** across `tests/unit/test_core.py` and `tests/integration/`, organized into classes:
 
 | Class | Tests | Coverage |
 |-------|-------|---------|
@@ -715,9 +718,16 @@ Key testing patterns:
 ```
 tests/
 ├── unit/
-│   └── test_core.py               # 68 tests — all connectors, enrichers, retrievers
-└── integration/
-    └── test_bigquery.py           # real BQ, CI only (@pytest.mark.integration)
+│   ├── test_core.py               # 68 unit tests — all connectors, enrichers, retrievers
+│   └── test_cli.py                # CLI smoke tests
+├── integration/
+│   ├── test_bigquery.py           # real BQ (@pytest.mark.integration)
+│   ├── test_sqlite_integration.py # real SQLite (ecommerce.db fixture)
+│   └── test_mysql_integration.py  # real MySQL (@pytest.mark.integration)
+├── fixtures/
+│   ├── ecommerce.db               # SQLite test fixture
+│   └── ecommerce_catalog.json     # Pre-built catalog fixture
+└── evals/
 ```
 
 ---
@@ -733,6 +743,7 @@ tests/
 | v0.4 | LLM descriptions (callable) + .to_prompt() serializer | 1-2 weeks |
 | v0.5 | PostgreSQL connector (validate abstraction works) | 2 weeks |
 | v0.6 | CLI tool, documentation, PyPI publish | 1-2 weeks |
+| v0.7 | SQLite + MySQL connectors, integration tests | completed |
 
 ---
 
@@ -745,6 +756,8 @@ tests/
 ### Connector extras
 - `sqlens[bigquery]` → google-cloud-bigquery
 - `sqlens[postgresql]` → psycopg2-binary (v0.5)
+- `sqlens[mysql]` → mysql-connector-python (v0.7)
+- SQLite → built-in (zero deps, v0.7)
 
 ### Retrieval extras
 - `sqlens[numpy]` → numpy
