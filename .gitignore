@@ -39,6 +39,7 @@ Thumbs.db
 validation_output/
 *.catalog.json
 thelook_catalog*.json
+tests/evals/fixtures/*.db
 
 # Secrets
 .env.local
