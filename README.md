@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/PabloAndresE/SQLens/actions/workflows/ci.yml"><img src="https://github.com/PabloAndresE/SQLens/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-blue" alt="Python 3.10+">
   <img src="https://img.shields.io/badge/version-0.7.0-green" alt="version">
   <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="MIT License">
