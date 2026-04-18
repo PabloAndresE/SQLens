@@ -6,7 +6,7 @@ Requires: pip install sqlens[mysql]
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 from sqlens.connectors.base import ConnectorProtocol
@@ -135,7 +135,7 @@ class MySQLConnector(ConnectorProtocol):
         data_type: str,
         include_top_values: bool = False,
         top_n: int = 5,
-    ) -> Optional[ColumnStats]:
+    ) -> ColumnStats | None:
         """Return column stats using MySQL-compatible SQL."""
         fqn = self.qualify_table_name(table)
         col = f"`{column_name}`"
@@ -189,15 +189,15 @@ class MySQLConnector(ConnectorProtocol):
         """Execute SQL and return rows as dicts."""
         cursor = self._conn.cursor(dictionary=True)
         try:
-            cursor.execute(sql, params)
-            return cursor.fetchall()
+            cursor.execute(sql, params)  # type: ignore[arg-type]
+            return cursor.fetchall()  # type: ignore[return-value]
         finally:
             cursor.close()
 
     @staticmethod
     def _parse_connection(connection_string: str, database: str | None) -> tuple[str, dict]:
         """Parse a connection URI into (database_name, connect_kwargs)."""
-        from urllib.parse import urlparse, parse_qs
+        from urllib.parse import urlparse
 
         # Normalize scheme: mysql+mysqlconnector:// → mysql://
         normalized = connection_string

@@ -83,7 +83,7 @@ def print_diff(before: dict, after: dict) -> tuple[int, int]:
         # Table description
         if b["table_description"] is None and a["table_description"] is not None:
             print(f"\n  [{table_name}] table description:")
-            print(f"    before: (none)")
+            print("    before: (none)")
             print(f"    after:  {a['table_description']}")
             new_table += 1
 
@@ -147,18 +147,18 @@ def main() -> None:
             undescribed_before[table_name] = missing
     tables_without_desc = [t for t, s in before.items() if s["table_description"] is None]
 
-    print(f"\nBEFORE enrichment:")
+    print("\nBEFORE enrichment:")
     print(f"  Column descriptions : {described_before}/{total_cols}")
     print(f"  Table descriptions  : {ctx.table_count - len(tables_without_desc)}/{ctx.table_count}")
     if undescribed_before:
-        print(f"  Undescribed columns :")
+        print("  Undescribed columns :")
         for table_name, cols in undescribed_before.items():
             print(f"    {table_name}: {', '.join(cols)}")
     if tables_without_desc:
         print(f"  Tables without desc : {', '.join(tables_without_desc)}")
 
     # ── Enrich with Gemini ────────────────────────────────────────
-    print(f"\nRunning enrich(descriptions=gemini_callable) …")
+    print("\nRunning enrich(descriptions=gemini_callable) …")
     import time
     t0 = time.time()
     ctx.enrich(descriptions=gemini_callable)
@@ -203,18 +203,25 @@ def main() -> None:
 
     # ── Summary ───────────────────────────────────────────────────
     print("\n── SUMMARY ──────────────────────────────────────────────────────")
-    print(f"  Column descriptions : {described_before}/{total_cols} → {described_after}/{total_cols}")
-    print(f"  Table descriptions  : {ctx.table_count - len(tables_without_desc)}/{ctx.table_count} → {tables_with_desc_after}/{ctx.table_count}")
+    print(
+        f"  Column descriptions : {described_before}/{total_cols}"
+        f" → {described_after}/{total_cols}"
+    )
+    tbl_before = ctx.table_count - len(tables_without_desc)
+    print(
+        f"  Table descriptions  : {tbl_before}/{ctx.table_count}"
+        f" → {tables_with_desc_after}/{ctx.table_count}"
+    )
     print(f"  New col descriptions: {new_col}")
     print(f"  New table descs     : {new_table}")
     print(f"  LLM time            : {elapsed:.1f}s")
 
     if still_undescribed:
-        print(f"\n  Still undescribed (LLM failed or returned nothing):")
+        print("\n  Still undescribed (LLM failed or returned nothing):")
         for table_name, cols in still_undescribed.items():
             print(f"    {table_name}: {', '.join(cols)}")
     else:
-        print(f"\n  All columns now have descriptions.")
+        print("\n  All columns now have descriptions.")
 
     # Full prompt token estimate for a broad query
     result_full = ctx.get_context("schema overview", max_tables=ctx.table_count)

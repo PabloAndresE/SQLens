@@ -6,8 +6,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 FIXTURES = Path(__file__).parent.parent / "fixtures"
 ECOMMERCE_DB = FIXTURES / "ecommerce.db"
 

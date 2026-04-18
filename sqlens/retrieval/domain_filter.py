@@ -6,7 +6,7 @@ the retriever only searches within the relevant subset of tables.
 
 from __future__ import annotations
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from sqlens.catalog.models import Catalog
 
@@ -46,8 +46,8 @@ DOMAIN_KEYWORDS: dict[str, list[str]] = {
 def classify_query_domain(
     query: str,
     available_domains: list[str],
-    llm_callable: Optional[Callable[[str], str]] = None,
-) -> Optional[str]:
+    llm_callable: Callable[[str], str] | None = None,
+) -> str | None:
     """Classify a query into a business domain.
 
     Tier 1: keyword matching (zero deps).

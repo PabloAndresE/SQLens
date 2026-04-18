@@ -6,7 +6,7 @@ Requires: pip install sqlens[postgresql]
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 from sqlens.connectors.base import ConnectorProtocol
@@ -28,7 +28,7 @@ class PostgreSQLConnector(ConnectorProtocol):
 
     def __init__(self, connection_string: str, schema: str = "public") -> None:
         try:
-            import psycopg2
+            import psycopg2  # type: ignore[import-untyped]
         except ImportError:
             raise ImportError(
                 "PostgreSQL connector requires psycopg2. "
@@ -162,7 +162,7 @@ class PostgreSQLConnector(ConnectorProtocol):
         data_type: str,
         include_top_values: bool = False,
         top_n: int = 5,
-    ) -> Optional[ColumnStats]:
+    ) -> ColumnStats | None:
         """Return column stats using standard PostgreSQL SQL.
 
         Uses COUNT(DISTINCT …), CAST(… AS TEXT), and double-quoted identifiers

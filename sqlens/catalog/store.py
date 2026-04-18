@@ -7,7 +7,7 @@ with cached enrichment data based on structural fingerprints.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +31,7 @@ def save_catalog(catalog: Catalog, path: str | Path) -> None:
 
 def load_catalog(path: str | Path) -> Catalog:
     """Load a catalog from a JSON file."""
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
     return _catalog_from_serializable(data)
 

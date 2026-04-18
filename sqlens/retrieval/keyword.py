@@ -10,7 +10,6 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter
-from typing import Optional
 
 from sqlens.catalog.models import Catalog, RetrievalResult, Table
 from sqlens.retrieval.base import RetrieverProtocol
@@ -45,7 +44,7 @@ class KeywordRetriever(RetrieverProtocol):
     """
 
     def __init__(self) -> None:
-        self._catalog: Optional[Catalog] = None
+        self._catalog: Catalog | None = None
         self._documents: dict[str, list[str]] = {}  # table_name → tokens
         self._idf: dict[str, float] = {}
         self._doc_tfidf: dict[str, dict[str, float]] = {}
@@ -88,7 +87,7 @@ class KeywordRetriever(RetrieverProtocol):
         self,
         query: str,
         max_tables: int = 5,
-        candidate_tables: Optional[list[str]] = None,
+        candidate_tables: list[str] | None = None,
     ) -> RetrievalResult:
         if self._catalog is None:
             raise RuntimeError("Call build_index() before retrieve()")

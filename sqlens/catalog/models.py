@@ -12,8 +12,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
-
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Raw types (produced by connectors, consumed by introspection engine)
@@ -28,7 +27,7 @@ class RawColumn:
     nullable: bool = True
     is_primary_key: bool = False
     ordinal_position: int = 0
-    description: Optional[str] = None  # from DB comments if available
+    description: str | None = None  # from DB comments if available
 
 
 @dataclass
@@ -48,12 +47,12 @@ class RawForeignKey:
 class ColumnStats:
     """Statistics for a single column, produced by the stats enricher."""
 
-    cardinality: Optional[int] = None
-    null_pct: Optional[float] = None
-    min_value: Optional[str] = None
-    max_value: Optional[str] = None
-    top_values: Optional[list[str]] = None
-    distribution: Optional[dict[str, Any]] = None
+    cardinality: int | None = None
+    null_pct: float | None = None
+    min_value: str | None = None
+    max_value: str | None = None
+    top_values: list[str] | None = None
+    distribution: dict[str, Any] | None = None
 
 
 @dataclass
@@ -65,8 +64,8 @@ class Column:
     nullable: bool = True
     is_primary_key: bool = False
     ordinal_position: int = 0
-    description: Optional[str] = None
-    stats: Optional[ColumnStats] = None
+    description: str | None = None
+    stats: ColumnStats | None = None
 
     def to_dict(self, level: str = "standard") -> dict[str, Any]:
         """Serialize column to dict, respecting the detail level."""
@@ -111,7 +110,7 @@ class Relationship:
     target_table: str
     target_column: str
     type: str = "explicit"  # "explicit" | "inferred"
-    confidence: Optional[float] = None  # 0.0-1.0, only for inferred
+    confidence: float | None = None  # 0.0-1.0, only for inferred
 
     def to_dict(self, level: str = "standard") -> dict[str, Any]:
         d: dict[str, Any] = {
@@ -134,12 +133,12 @@ class Table:
 
     name: str
     columns: list[Column] = field(default_factory=list)
-    description: Optional[str] = None
-    row_count: Optional[int] = None
+    description: str | None = None
+    row_count: int | None = None
     relationships: list[Relationship] = field(default_factory=list)
-    sample_data: Optional[list[dict[str, Any]]] = None
+    sample_data: list[dict[str, Any]] | None = None
     domains: list[str] = field(default_factory=list)
-    fingerprint: Optional[str] = None
+    fingerprint: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def compute_fingerprint(self) -> str:
@@ -214,11 +213,11 @@ class Catalog:
 
     source: str  # e.g. "bigquery://project.dataset"
     tables: list[Table] = field(default_factory=list)
-    extracted_at: Optional[datetime] = None
+    extracted_at: datetime | None = None
     enrichers_applied: list[str] = field(default_factory=list)
     version: str = "1.0"
 
-    def get_table(self, name: str) -> Optional[Table]:
+    def get_table(self, name: str) -> Table | None:
         """Look up a table by name."""
         for t in self.tables:
             if t.name == name:
@@ -271,9 +270,9 @@ class RetrievalResult:
     query: str
     retrieval_method: str  # "keyword" | "cosine" | "vector_db"
     total_tables_in_catalog: int
-    domain_filter_applied: Optional[str] = None
-    tables_after_domain_filter: Optional[int] = None
-    scores: Optional[dict[str, float]] = None
+    domain_filter_applied: str | None = None
+    tables_after_domain_filter: int | None = None
+    scores: dict[str, float] | None = None
 
     def to_dict(self, level: str = "standard") -> dict[str, Any]:
         return {

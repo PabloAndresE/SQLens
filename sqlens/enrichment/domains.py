@@ -6,7 +6,7 @@ relationship propagation. Supports manual overrides.
 
 from __future__ import annotations
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from sqlens.catalog.models import Catalog
 from sqlens.connectors.base import ConnectorProtocol
@@ -39,7 +39,11 @@ def _detect_domains_by_name(table_name: str) -> list[str]:
     lower = table_name.lower()
     domains: list[str] = []
     for domain, patterns in TABLE_NAME_PATTERNS.items():
-        if any(lower.startswith(p) or lower.endswith(p) or f"_{p}_" in f"_{lower}_" for p in patterns):
+        if any(
+            lower.startswith(p) or lower.endswith(p)
+            or f"_{p}_" in f"_{lower}_"
+            for p in patterns
+        ):
             domains.append(domain)
     return domains
 
@@ -75,8 +79,8 @@ class DomainsEnricher(EnricherProtocol):
 
     def __init__(
         self,
-        overrides: Optional[dict[str, list[str]]] = None,
-        llm_callable: Optional[Callable[[str], str]] = None,
+        overrides: dict[str, list[str]] | None = None,
+        llm_callable: Callable[[str], str] | None = None,
     ) -> None:
         self._overrides = overrides or {}
         self._llm = llm_callable

@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sqlens.catalog.models import Catalog, RetrievalResult, Table
+    from sqlens.catalog.models import Catalog, RetrievalResult
 
 
 def _format_column_prompt(col_dict: dict, level: str) -> str:
@@ -70,9 +70,12 @@ def _format_table_prompt(table_dict: dict, level: str) -> str:
         lines.append("")
         lines.append("Relationships:")
         for rel in rels:
-            rel_str = f"  - {table_dict['name']}.{rel['source_column']} → {rel['target_table']}.{rel['target_column']}"
+            rel_str = (
+                f"  - {table_dict['name']}.{rel['source_column']}"
+                f" → {rel['target_table']}.{rel['target_column']}"
+            )
             if rel.get("type") == "inferred":
-                rel_str += f" (inferred"
+                rel_str += " (inferred"
                 if rel.get("confidence"):
                     rel_str += f", confidence: {rel['confidence']:.2f}"
                 rel_str += ")"

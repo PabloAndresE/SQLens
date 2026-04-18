@@ -8,7 +8,6 @@ list into whichever retriever is active.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from sqlens.catalog.models import Catalog, RetrievalResult
 
@@ -30,7 +29,7 @@ class RetrieverProtocol(ABC):
         self,
         query: str,
         max_tables: int = 5,
-        candidate_tables: Optional[list[str]] = None,
+        candidate_tables: list[str] | None = None,
     ) -> RetrievalResult:
         """Given a natural language query, return the most relevant tables.
 

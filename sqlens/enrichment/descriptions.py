@@ -6,8 +6,7 @@ type inference) with an optional LLM fallback for unresolved cases.
 
 from __future__ import annotations
 
-import re
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from sqlens.catalog.models import Catalog
 from sqlens.connectors.base import ConnectorProtocol
@@ -217,7 +216,7 @@ def _expand_abbreviations(name: str) -> str:
     return " ".join(expanded)
 
 
-def _describe_column_by_pattern(name: str) -> Optional[str]:
+def _describe_column_by_pattern(name: str) -> str | None:
     """Try to describe a column based on naming patterns."""
     lower = name.lower()
 
@@ -234,7 +233,7 @@ def _describe_column_by_pattern(name: str) -> Optional[str]:
     return None
 
 
-def _describe_column_by_type(data_type: str) -> Optional[str]:
+def _describe_column_by_type(data_type: str) -> str | None:
     """Infer a generic description from the column's data type."""
     upper = data_type.upper()
     if "TIMESTAMP" in upper or "DATETIME" in upper:
@@ -248,7 +247,7 @@ def _describe_column_by_type(data_type: str) -> Optional[str]:
     return None
 
 
-def describe_column(name: str, data_type: str) -> Optional[str]:
+def describe_column(name: str, data_type: str) -> str | None:
     """Generate a description for a column using heuristics.
 
     Tries pattern matching first, then abbreviation expansion, then direct
@@ -274,7 +273,7 @@ def describe_column(name: str, data_type: str) -> Optional[str]:
     return _describe_column_by_type(data_type)
 
 
-def describe_table(name: str, column_names: list[str]) -> Optional[str]:
+def describe_table(name: str, column_names: list[str]) -> str | None:
     """Generate a description for a table based on its name and columns."""
     expanded = _expand_abbreviations(name)
     original_joined = " ".join(name.lower().split("_"))
@@ -292,7 +291,7 @@ class DescriptionsEnricher(EnricherProtocol):
             described by heuristics. Pass None for rule-based only.
     """
 
-    def __init__(self, llm_callable: Optional[Callable[[str], str]] = None) -> None:
+    def __init__(self, llm_callable: Callable[[str], str] | None = None) -> None:
         self._llm = llm_callable
 
     def name(self) -> str:

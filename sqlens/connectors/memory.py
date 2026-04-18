@@ -78,8 +78,8 @@ class MemoryConnector(ConnectorProtocol):
         """Return stored rows. SQL parsing is not implemented — returns all rows."""
         for table_data in self._tables.values():
             if "rows" in table_data:
-                return table_data["rows"]
+                return table_data["rows"]  # type: ignore[no-any-return]
         return []
 
     def get_table_metadata(self, table: str) -> dict[str, Any]:
-        return self._tables[table].get("metadata", {})
+        return self._tables[table].get("metadata", {})  # type: ignore[no-any-return]

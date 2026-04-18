@@ -25,8 +25,9 @@ def _ensure_fixture() -> Path:
         import subprocess
         import sys
 
+        script = Path(__file__).parent.parent.parent / "scripts" / "create_sqlite_fixture.py"
         subprocess.check_call(
-            [sys.executable, str(Path(__file__).parent.parent.parent / "scripts" / "create_sqlite_fixture.py")]
+            [sys.executable, str(script)]
         )
     return FIXTURE_DB
 

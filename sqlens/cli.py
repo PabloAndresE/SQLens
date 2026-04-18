@@ -16,7 +16,6 @@ import json
 import sys
 import time
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -111,15 +110,18 @@ def cmd_enrich(args: argparse.Namespace) -> None:
     except Exception as e:
         _err(f"could not load catalog: {e}")
 
-    before_desc = sum(
-        1 for t_name in ctx.tables
-        for col in ctx.get_table(t_name).columns
-        if col.description is not None
-    )
-    before_rel = sum(
-        len([r for r in ctx.get_table(t).relationships if r.type == "inferred"])
-        for t in ctx.tables
-    )
+    before_desc = 0
+    for t_name in ctx.tables:
+        tbl = ctx.get_table(t_name)
+        if tbl is None:
+            continue
+        before_desc += sum(1 for col in tbl.columns if col.description is not None)
+    before_rel = 0
+    for t_name in ctx.tables:
+        tbl = ctx.get_table(t_name)
+        if tbl is None:
+            continue
+        before_rel += len([r for r in tbl.relationships if r.type == "inferred"])
 
     kwargs: dict = {}
     if args.descriptions:
@@ -134,7 +136,10 @@ def cmd_enrich(args: argparse.Namespace) -> None:
         kwargs["domains"] = True
 
     if not kwargs:
-        _err("specify at least one enricher: --descriptions, --stats, --relations, --samples N, --domains")
+        _err(
+            "specify at least one enricher: --descriptions,"
+            " --stats, --relations, --samples N, --domains"
+        )
 
     t0 = time.time()
     ctx.enrich(**kwargs)
@@ -144,16 +149,24 @@ def cmd_enrich(args: argparse.Namespace) -> None:
     ctx.save(output)
 
     # Summary
-    total_cols = sum(len(ctx.get_table(t).columns) for t in ctx.tables)
-    after_desc = sum(
-        1 for t_name in ctx.tables
-        for col in ctx.get_table(t_name).columns
-        if col.description is not None
-    )
-    after_rel = sum(
-        len([r for r in ctx.get_table(t).relationships if r.type == "inferred"])
-        for t in ctx.tables
-    )
+    total_cols = 0
+    for t_name in ctx.tables:
+        tbl = ctx.get_table(t_name)
+        if tbl is None:
+            continue
+        total_cols += len(tbl.columns)
+    after_desc = 0
+    for t_name in ctx.tables:
+        tbl = ctx.get_table(t_name)
+        if tbl is None:
+            continue
+        after_desc += sum(1 for col in tbl.columns if col.description is not None)
+    after_rel = 0
+    for t_name in ctx.tables:
+        tbl = ctx.get_table(t_name)
+        if tbl is None:
+            continue
+        after_rel += len([r for r in tbl.relationships if r.type == "inferred"])
 
     print(f"enriched {ctx.table_count} tables in {elapsed:.1f}s → {output}")
     print(f"  enrichers applied : {', '.join(ctx.enrichers_applied)}")

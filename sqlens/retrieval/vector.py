@@ -6,9 +6,9 @@ This is the highest-tier retriever, suitable for schemas with 500+ tables.
 
 from __future__ import annotations
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
-from sqlens.catalog.models import Catalog, RetrievalResult
+from sqlens.catalog.models import Catalog, RetrievalResult, Table
 from sqlens.retrieval.base import RetrieverProtocol
 
 
@@ -25,23 +25,23 @@ class VectorDBRetriever(RetrieverProtocol):
         self,
         embedding_fn: Callable[[str], list[float]],
         collection_name: str = "sqlens_tables",
-        persist_directory: Optional[str] = None,
+        persist_directory: str | None = None,
     ) -> None:
         self._embed = embedding_fn
         self._collection_name = collection_name
         self._persist_directory = persist_directory
-        self._catalog: Optional[Catalog] = None
+        self._catalog: Catalog | None = None
         self._collection = None
 
     def is_available(self) -> bool:
         try:
-            import chromadb  # noqa: F401
+            import chromadb  # type: ignore[import-not-found]  # noqa: F401
             return True
         except ImportError:
             return False
 
     def build_index(self, catalog: Catalog) -> None:
-        import chromadb
+        import chromadb  # type: ignore[import-not-found]
 
         self._catalog = catalog
 
@@ -73,6 +73,7 @@ class VectorDBRetriever(RetrieverProtocol):
             embeddings.append(vec)
 
         if documents:
+            assert self._collection is not None
             self._collection.add(
                 documents=documents,
                 ids=ids,
@@ -83,7 +84,7 @@ class VectorDBRetriever(RetrieverProtocol):
         self,
         query: str,
         max_tables: int = 5,
-        candidate_tables: Optional[list[str]] = None,
+        candidate_tables: list[str] | None = None,
     ) -> RetrievalResult:
         if self._catalog is None or self._collection is None:
             raise RuntimeError("Call build_index() before retrieve()")
@@ -121,7 +122,7 @@ class VectorDBRetriever(RetrieverProtocol):
         )
 
     @staticmethod
-    def _table_to_text(table) -> str:
+    def _table_to_text(table: Table) -> str:
         parts = [table.name]
         if table.description:
             parts.append(table.description)

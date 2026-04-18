@@ -7,7 +7,7 @@ is to extract raw schema metadata — it does not interpret, enrich, or format.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 
@@ -78,7 +78,7 @@ class ConnectorProtocol(ABC):
         data_type: str,
         include_top_values: bool = False,
         top_n: int = 5,
-    ) -> Optional[ColumnStats]:
+    ) -> ColumnStats | None:
         """Return column stats using connector-specific SQL, or None to use defaults.
 
         Override in connectors to provide dialect-specific stats collection

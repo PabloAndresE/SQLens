@@ -12,7 +12,6 @@ You need a GCP project for billing even though the data is public.
 """
 
 import argparse
-import json
 import sys
 import time
 from pathlib import Path
@@ -98,7 +97,11 @@ def main() -> None:
         inferred = [r for r in table.relationships if r.type == "inferred"]
         if inferred:
             for r in inferred:
-                print(f"    Inferred FK: {r.source_column} -> {r.target_table}.{r.target_column} (conf: {r.confidence})")
+                print(
+                    f"    Inferred FK: {r.source_column} -> "
+                    f"{r.target_table}.{r.target_column} "
+                    f"(conf: {r.confidence})"
+                )
         described_cols = [c for c in table.columns if c.description]
         undescribed = [c for c in table.columns if not c.description]
         print(f"    Columns described: {len(described_cols)}/{len(table.columns)}")
@@ -116,7 +119,10 @@ def main() -> None:
 
         for table_name in ctx.tables[:3]:  # show first 3
             table = ctx.get_table(table_name)
-            print(f"\n  {table_name} ({table.row_count:,} rows)" if table.row_count else f"\n  {table_name}")
+            if table.row_count:
+                print(f"\n  {table_name} ({table.row_count:,} rows)")
+            else:
+                print(f"\n  {table_name}")
             for col in table.columns[:5]:  # show first 5 columns
                 if col.stats:
                     s = col.stats
@@ -192,7 +198,10 @@ def main() -> None:
     for query, domain in test_queries:
         result = ctx.get_context(query, max_tables=3, domain=domain)
         table_names = [t.name for t in result.tables]
-        domain_info = f" [domain={result.domain_filter_applied}]" if result.domain_filter_applied else ""
+        domain_info = (
+            f" [domain={result.domain_filter_applied}]"
+            if result.domain_filter_applied else ""
+        )
         print(f"\n  Query: \"{query}\"{domain_info}")
         print(f"  Results: {', '.join(table_names)}")
         if result.scores:
@@ -211,7 +220,7 @@ def main() -> None:
 
     print(f"Saved to {prompt_path}")
     print(f"Prompt length: {len(prompt):,} chars (~{len(prompt)//4:,} tokens)")
-    print(f"\nFirst 500 chars:")
+    print("\nFirst 500 chars:")
     print("-" * 40)
     print(prompt[:500])
     print("-" * 40)

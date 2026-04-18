@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -10,22 +9,20 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from sqlens import SQLens
-from sqlens.catalog.models import Catalog, Column, Relationship, Table
-from sqlens.catalog.store import load_catalog, save_catalog, merge_catalogs
+from sqlens.catalog.models import Column, Table
+from sqlens.catalog.store import load_catalog, merge_catalogs
 from sqlens.connectors.memory import MemoryConnector
 from sqlens.enrichment.descriptions import describe_column, describe_table
-from sqlens.enrichment.domains import _detect_domains_by_name, _detect_domains_by_columns
+from sqlens.enrichment.domains import _detect_domains_by_columns, _detect_domains_by_name
 from sqlens.enrichment.relations import RelationsEnricher
 from sqlens.introspection.engine import IntrospectionEngine
 from sqlens.retrieval.domain_filter import classify_query_domain
-from sqlens.retrieval.keyword import KeywordRetriever
 
 try:
-    import numpy as np
     from sqlens.retrieval.cosine import (
         NumpyCosineRetriever,
-        _numpy_hash_embedding,
         _build_default_embedding_fn,
+        _numpy_hash_embedding,
     )
     _NUMPY_AVAILABLE = True
 except ImportError:
@@ -43,7 +40,8 @@ def _make_ecommerce_connector() -> MemoryConnector:
         tables={
             "users": {
                 "columns": [
-                    {"name": "id", "data_type": "STRING", "is_primary_key": True, "nullable": False},
+                    {"name": "id", "data_type": "STRING",
+                     "is_primary_key": True, "nullable": False},
                     {"name": "email", "data_type": "STRING"},
                     {"name": "country_code", "data_type": "STRING"},
                     {"name": "created_at", "data_type": "TIMESTAMP", "nullable": False},
@@ -52,12 +50,17 @@ def _make_ecommerce_connector() -> MemoryConnector:
                 "foreign_keys": [],
                 "metadata": {"row_count": 50000},
                 "rows": [
-                    {"id": "u1", "email": "a@b.com", "country_code": "EC", "created_at": "2026-01-01", "is_active": True},
+                    {
+                        "id": "u1", "email": "a@b.com",
+                        "country_code": "EC", "created_at": "2026-01-01",
+                        "is_active": True,
+                    },
                 ],
             },
             "orders": {
                 "columns": [
-                    {"name": "id", "data_type": "STRING", "is_primary_key": True, "nullable": False},
+                    {"name": "id", "data_type": "STRING",
+                     "is_primary_key": True, "nullable": False},
                     {"name": "user_id", "data_type": "STRING", "nullable": False},
                     {"name": "total_amount", "data_type": "NUMERIC", "nullable": False},
                     {"name": "status", "data_type": "STRING"},
@@ -66,12 +69,17 @@ def _make_ecommerce_connector() -> MemoryConnector:
                 "foreign_keys": [],
                 "metadata": {"row_count": 200000},
                 "rows": [
-                    {"id": "o1", "user_id": "u1", "total_amount": 85.50, "status": "completed", "created_at": "2026-03-15"},
+                    {
+                        "id": "o1", "user_id": "u1",
+                        "total_amount": 85.50, "status": "completed",
+                        "created_at": "2026-03-15",
+                    },
                 ],
             },
             "products": {
                 "columns": [
-                    {"name": "id", "data_type": "STRING", "is_primary_key": True, "nullable": False},
+                    {"name": "id", "data_type": "STRING",
+                     "is_primary_key": True, "nullable": False},
                     {"name": "name", "data_type": "STRING", "nullable": False},
                     {"name": "price", "data_type": "NUMERIC", "nullable": False},
                     {"name": "category_id", "data_type": "STRING"},
@@ -82,7 +90,8 @@ def _make_ecommerce_connector() -> MemoryConnector:
             },
             "audit_log": {
                 "columns": [
-                    {"name": "id", "data_type": "STRING", "is_primary_key": True, "nullable": False},
+                    {"name": "id", "data_type": "STRING",
+                     "is_primary_key": True, "nullable": False},
                     {"name": "action", "data_type": "STRING"},
                     {"name": "user_id", "data_type": "STRING"},
                     {"name": "created_at", "data_type": "TIMESTAMP"},
@@ -404,7 +413,10 @@ class TestPKInference:
 
     def test_singular_table_name_id_column_inferred(self):
         # orders has no 'id' column; 'order_id' should be picked by rule 2
-        table = self._make_table("orders", [("order_id", False), ("user_id", False), ("status", True)])
+        table = self._make_table(
+            "orders",
+            [("order_id", False), ("user_id", False), ("status", True)],
+        )
         IntrospectionEngine._infer_primary_keys(table)
         pk_cols = [c for c in table.columns if c.is_primary_key]
         assert len(pk_cols) == 1
@@ -417,7 +429,8 @@ class TestPKInference:
             tables={
                 "products": {
                     "columns": [
-                        {"name": "product_code", "data_type": "STRING", "is_primary_key": True, "nullable": False},
+                        {"name": "product_code", "data_type": "STRING",
+                         "is_primary_key": True, "nullable": False},
                         {"name": "name", "data_type": "STRING"},
                     ],
                     "foreign_keys": [],
@@ -684,7 +697,8 @@ class TestPostgreSQLConnector:
             tables={
                 "orders": {
                     "columns": [
-                        {"name": "order_id", "data_type": "INT", "is_primary_key": True, "nullable": False},
+                        {"name": "order_id", "data_type": "INT",
+                         "is_primary_key": True, "nullable": False},
                         {"name": "total", "data_type": "NUMERIC"},
                     ],
                     "foreign_keys": [],
@@ -709,15 +723,14 @@ class TestPostgreSQLConnector:
         mock_cursor.description = [("cardinality",), ("null_pct",)]
         mock_cursor.fetchall.return_value = [(42, 0.05)]
         with patch.dict("sys.modules", {"psycopg2": mock_pg}):
-            from sqlens.connectors.postgresql import PostgreSQLConnector
             from sqlens.catalog.models import ColumnStats
+            from sqlens.connectors.postgresql import PostgreSQLConnector
             connector = PostgreSQLConnector("postgresql://localhost/testdb")
         stats = connector.get_column_stats("users", "email", "CHARACTER VARYING")
         assert isinstance(stats, ColumnStats)
 
     def test_base_connector_get_column_stats_returns_none(self):
         """Default ConnectorProtocol.get_column_stats() returns None (BigQuery fallback)."""
-        from sqlens.connectors.base import ConnectorProtocol
         connector = MemoryConnector(tables={}, source="memory://test")
         result = connector.get_column_stats("t", "col", "STRING")
         assert result is None
@@ -815,7 +828,6 @@ class TestSQLiteConnector:
         assert ctx.table_count == 0
 
     def test_introspect_with_sqlite(self):
-        from sqlens.connectors.sqlite import SQLiteConnector
         connector = self._make_connector()
         ctx = SQLens.from_connector(connector)
         assert ctx.table_count == 2
@@ -823,7 +835,6 @@ class TestSQLiteConnector:
         assert "orders" in ctx.tables
 
     def test_enrich_with_sqlite(self):
-        from sqlens.connectors.sqlite import SQLiteConnector
         connector = self._make_connector()
         ctx = SQLens.from_connector(connector)
         ctx.enrich(descriptions=True, relations=True, domains=True)

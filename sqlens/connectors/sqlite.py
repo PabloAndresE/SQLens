@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 from sqlens.connectors.base import ConnectorProtocol
@@ -99,7 +99,7 @@ class SQLiteConnector(ConnectorProtocol):
         data_type: str,
         include_top_values: bool = False,
         top_n: int = 5,
-    ) -> Optional[ColumnStats]:
+    ) -> ColumnStats | None:
         """Return column stats using SQLite-compatible SQL."""
         fqn = self.qualify_table_name(table)
         col = f'"{column_name}"'

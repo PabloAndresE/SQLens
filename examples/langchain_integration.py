@@ -14,7 +14,6 @@ Usage:
 from __future__ import annotations
 
 import os
-import sys
 
 from sqlens import SQLens
 
@@ -53,8 +52,8 @@ def main() -> None:
     # This step requires: pip install langchain langchain-openai
     # and OPENAI_API_KEY set in environment.
     try:
-        from langchain_openai import ChatOpenAI
         from langchain_core.prompts import ChatPromptTemplate
+        from langchain_openai import ChatOpenAI
     except ImportError:
         print("=" * 60)
         print("LangChain not installed. The schema context above is what")

@@ -17,8 +17,9 @@ Usage:
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 from sqlens.catalog.models import Catalog, RetrievalResult
 from sqlens.catalog.serializers import catalog_to_prompt
@@ -43,13 +44,13 @@ class SQLens:
     → retrieval → context output.
     """
 
-    def __init__(self, catalog: Catalog, connector: Optional[ConnectorProtocol] = None) -> None:
+    def __init__(self, catalog: Catalog, connector: ConnectorProtocol | None = None) -> None:
         self._catalog = catalog
         self._connector = connector
-        self._retriever: Optional[RetrieverProtocol] = None
-        self._retriever_method: Optional[str] = None  # effective method of cached retriever
-        self._embedding_fn: Optional[Callable[[str], list[float]]] = None  # cached model instance
-        self._llm_callable: Optional[Callable[[str], str]] = None
+        self._retriever: RetrieverProtocol | None = None
+        self._retriever_method: str | None = None  # effective method of cached retriever
+        self._embedding_fn: Callable[[str], list[float]] | None = None  # cached model instance
+        self._llm_callable: Callable[[str], str] | None = None
 
     # ------------------------------------------------------------------
     # Factory methods
@@ -275,8 +276,8 @@ class SQLens:
         query: str,
         max_tables: int = 5,
         level: str = "standard",
-        domain: Optional[str] = None,
-        retrieval: Optional[str] = None,
+        domain: str | None = None,
+        retrieval: str | None = None,
     ) -> RetrievalResult:
         """Retrieve relevant schema context for a natural language query.
 
@@ -299,7 +300,10 @@ class SQLens:
             self._retriever = retriever
             try:
                 from sqlens.retrieval.cosine import NumpyCosineRetriever
-                self._retriever_method = "cosine" if isinstance(retriever, NumpyCosineRetriever) else "keyword"
+                self._retriever_method = (
+                    "cosine" if isinstance(retriever, NumpyCosineRetriever)
+                    else "keyword"
+                )
             except ImportError:
                 self._retriever_method = "keyword"
 
@@ -309,7 +313,7 @@ class SQLens:
         tables_after_filter = None
 
         if domain is not None:
-            resolved_domain = domain
+            resolved_domain: str | None = domain
             if domain == "auto":
                 resolved_domain = classify_query_domain(
                     query,
@@ -334,7 +338,7 @@ class SQLens:
 
         return result
 
-    def _resolve_retriever(self, forced: Optional[str] = None) -> RetrieverProtocol:
+    def _resolve_retriever(self, forced: str | None = None) -> RetrieverProtocol:
         """Resolve the best available retriever (auto-detect cascade).
 
         Cascade order:
@@ -409,10 +413,10 @@ class SQLens:
     def tables_in_domain(self, domain: str) -> list[str]:
         return self._catalog.tables_in_domain(domain)
 
-    def get_table(self, name: str) -> Optional[Any]:
+    def get_table(self, name: str) -> Any | None:
         return self._catalog.get_table(name)
 
-    def fingerprint(self, table_name: str) -> Optional[str]:
+    def fingerprint(self, table_name: str) -> str | None:
         table = self._catalog.get_table(table_name)
         return table.fingerprint if table else None
 

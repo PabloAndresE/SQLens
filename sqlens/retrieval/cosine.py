@@ -6,7 +6,7 @@ simple numpy array. No external vector DB needed — works well up to ~500 table
 
 from __future__ import annotations
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from sqlens.catalog.models import Catalog, RetrievalResult, Table
 from sqlens.retrieval.base import RetrieverProtocol
@@ -26,7 +26,7 @@ class NumpyCosineRetriever(RetrieverProtocol):
 
     def __init__(self, embedding_fn: Callable[[str], list[float]]) -> None:
         self._embed = embedding_fn
-        self._catalog: Optional[Catalog] = None
+        self._catalog: Catalog | None = None
         self._table_names: list[str] = []
         self._embeddings = None  # numpy array, set in build_index
 
@@ -50,9 +50,9 @@ class NumpyCosineRetriever(RetrieverProtocol):
             self._table_names.append(table.name)
             vectors.append(vec)
 
-        self._embeddings = np.array(vectors, dtype=np.float32)
+        self._embeddings = np.array(vectors, dtype=np.float32)  # type: ignore[assignment]
         # Normalize for cosine similarity
-        norms = np.linalg.norm(self._embeddings, axis=1, keepdims=True)
+        norms = np.linalg.norm(self._embeddings, axis=1, keepdims=True)  # type: ignore[call-overload]
         norms = np.where(norms == 0, 1, norms)
         self._embeddings = self._embeddings / norms
 
@@ -60,7 +60,7 @@ class NumpyCosineRetriever(RetrieverProtocol):
         self,
         query: str,
         max_tables: int = 5,
-        candidate_tables: Optional[list[str]] = None,
+        candidate_tables: list[str] | None = None,
     ) -> RetrievalResult:
         import numpy as np
 
@@ -129,7 +129,7 @@ class NumpyCosineRetriever(RetrieverProtocol):
         return " ".join(parts)
 
 
-import re
+import re  # noqa: E402
 
 
 def _numpy_hash_embedding(text: str, dim: int = 256) -> list[float]:
@@ -140,6 +140,7 @@ def _numpy_hash_embedding(text: str, dim: int = 256) -> list[float]:
     dense vectors — better than pure keyword for partial-match scenarios.
     """
     import hashlib
+
     import numpy as np
 
     tokens = re.findall(r"[a-z0-9]+", text.lower())
@@ -154,7 +155,7 @@ def _numpy_hash_embedding(text: str, dim: int = 256) -> list[float]:
 
     vec = vec / len(tokens)
     norm = np.linalg.norm(vec)
-    return (vec / norm if norm > 0 else vec).tolist()
+    return (vec / norm if norm > 0 else vec).tolist()  # type: ignore[no-any-return]
 
 
 def _build_default_embedding_fn() -> Callable[[str], list[float]]:

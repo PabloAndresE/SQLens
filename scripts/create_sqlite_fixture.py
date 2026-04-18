@@ -122,7 +122,9 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO users (id, email, first_name, last_name, country_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO users (id, email, first_name, last_name,"
+        " country_id, is_active, created_at)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
             (1, "alice@example.com", "Alice", "Smith", 2, 1, "2025-01-15T10:00:00"),
             (2, "bob@example.com", "Bob", "García", 1, 1, "2025-02-20T14:30:00"),
@@ -142,7 +144,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO products (id, name, price, category_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO products (id, name, price, category_id,"
+        " is_active, created_at) VALUES (?, ?, ?, ?, ?, ?)",
         [
             (1, "Laptop Pro", 1299.99, 1, 1, "2025-01-01T00:00:00"),
             (2, "Wireless Mouse", 29.99, 1, 1, "2025-01-01T00:00:00"),
@@ -153,7 +156,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO orders (id, user_id, status, total_amount, shipping_amount, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO orders (id, user_id, status, total_amount,"
+        " shipping_amount, created_at) VALUES (?, ?, ?, ?, ?, ?)",
         [
             (1, 1, "completed", 1329.98, 15.00, "2025-03-01T12:00:00"),
             (2, 2, "completed", 74.99, 5.00, "2025-03-10T14:00:00"),
@@ -164,7 +168,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO order_items (id, order_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO order_items (id, order_id, product_id,"
+        " quantity, unit_price) VALUES (?, ?, ?, ?, ?)",
         [
             (1, 1, 1, 1, 1299.99),
             (2, 1, 2, 1, 29.99),
@@ -177,7 +182,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO payments (id, order_id, method, amount, status, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO payments (id, order_id, method, amount,"
+        " status, created_at) VALUES (?, ?, ?, ?, ?, ?)",
         [
             (1, 1, "credit_card", 1344.98, "completed", "2025-03-01T12:01:00"),
             (2, 2, "paypal", 79.99, "completed", "2025-03-10T14:01:00"),
@@ -187,7 +193,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO reviews (id, user_id, product_id, rating, comment, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO reviews (id, user_id, product_id, rating,"
+        " comment, created_at) VALUES (?, ?, ?, ?, ?, ?)",
         [
             (1, 1, 1, 5, "Amazing laptop!", "2025-03-05T10:00:00"),
             (2, 2, 2, 4, "Good mouse, solid build", "2025-03-15T10:00:00"),
@@ -196,7 +203,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO coupons (id, code, discount_pct, valid_from, valid_until, is_active) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO coupons (id, code, discount_pct, valid_from,"
+        " valid_until, is_active) VALUES (?, ?, ?, ?, ?, ?)",
         [
             (1, "WELCOME10", 10.0, "2025-01-01", "2025-12-31", 1),
             (2, "SUMMER20", 20.0, "2025-06-01", "2025-08-31", 0),
@@ -204,7 +212,8 @@ def main() -> None:
     )
 
     cur.executemany(
-        "INSERT INTO audit_log (id, user_id, action, entity_type, entity_id, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO audit_log (id, user_id, action, entity_type,"
+        " entity_id, created_at) VALUES (?, ?, ?, ?, ?, ?)",
         [
             (1, 1, "login", "user", 1, "2025-03-01T11:59:00"),
             (2, 1, "purchase", "order", 1, "2025-03-01T12:00:00"),

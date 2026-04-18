@@ -6,7 +6,8 @@
       "Bash(ls:*)",
       "Bash(pip install:*)",
       "Bash(pip show:*)",
-      "Bash(which python3:*)"
+      "Bash(which python3:*)",
+      "Read(//Users/pabloencalada/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/subagent-driven-development/**)"
     ]
   }
 }

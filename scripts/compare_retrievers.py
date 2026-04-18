@@ -53,7 +53,10 @@ def run() -> None:
 
     separator = "-" * (COL_W * 2 + 45)
 
-    print(f"{'QUERY':<35} {'DOMAIN':<10} {'KEYWORD top-3':<{COL_W}} {'COSINE top-3':<{COL_W}} DIFF?")
+    print(
+        f"{'QUERY':<35} {'DOMAIN':<10} "
+        f"{'KEYWORD top-3':<{COL_W}} {'COSINE top-3':<{COL_W}} DIFF?"
+    )
     print(separator)
 
     for query, domain in QUERIES:
@@ -103,7 +106,7 @@ def run() -> None:
                 print(f"  cosine-only  : {', '.join(sorted(only_in_co))}")
 
     print(separator)
-    print(f"\nSUMMARY")
+    print("\nSUMMARY")
     print(f"  Total queries         : {len(QUERIES)}")
     print(f"  Different results     : {differing} / {len(QUERIES)}")
     print(f"  Queries where keyword found unique tables : {keyword_unique}")
