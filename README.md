@@ -255,6 +255,8 @@ pip install "sqlens[numpy]" sentence-transformers  # cosine with semantic model
 pip install sqlens[vector]                         # full vector DB
 ```
 
+> **Note:** The auto-detect cascade covers keyword and cosine retrieval. Vector DB retrieval requires explicit setup via `set_retriever()` because it needs a configured embedding function and persistence path. See `VectorDBRetriever` in the source for details.
+
 ### Force a specific retriever
 
 ```python
