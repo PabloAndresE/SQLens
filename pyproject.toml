@@ -69,4 +69,5 @@ disallow_untyped_defs = true
 testpaths = ["tests"]
 markers = [
     "integration: marks tests requiring real database connections (deselect with '-m \"not integration\"')",
+    "llm_required: marks tests that require an LLM API key (deselect with '-m \"not llm_required\"')",
 ]

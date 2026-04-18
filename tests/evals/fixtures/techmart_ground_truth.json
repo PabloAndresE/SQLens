@@ -1,0 +1,362 @@
+[
+  {
+    "id": "q01",
+    "nl": "How many active users registered last month?",
+    "expected_tables": ["users"],
+    "acceptable_tables": ["users", "user_sessions"],
+    "domain": "users",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q02",
+    "nl": "List all products in the electronics category",
+    "expected_tables": ["products", "categories"],
+    "acceptable_tables": ["products", "categories", "category_hierarchy"],
+    "domain": "products",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q03",
+    "nl": "Show me all orders placed this week",
+    "expected_tables": ["orders"],
+    "acceptable_tables": ["orders", "order_items"],
+    "domain": "sales",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q04",
+    "nl": "What are the current inventory levels per warehouse?",
+    "expected_tables": ["inventory", "warehouses"],
+    "acceptable_tables": ["inventory", "warehouses", "warehouse_inventory", "product_variants"],
+    "domain": "products",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q05",
+    "nl": "Which campaigns are currently running?",
+    "expected_tables": ["campaigns"],
+    "acceptable_tables": ["campaigns", "ad_impressions"],
+    "domain": "marketing",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q06",
+    "nl": "Show me recent error logs from the system",
+    "expected_tables": ["error_log"],
+    "acceptable_tables": ["error_log", "system_health", "audit_log"],
+    "domain": "ops",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q07",
+    "nl": "How many page views did we get yesterday?",
+    "expected_tables": ["page_views"],
+    "acceptable_tables": ["page_views", "session_events", "metrics_daily"],
+    "domain": "analytics",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q08",
+    "nl": "Show all refunds processed this month",
+    "expected_tables": ["refunds"],
+    "acceptable_tables": ["refunds", "payments", "returns"],
+    "domain": "finance",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q09",
+    "nl": "What are the available product categories?",
+    "expected_tables": ["categories"],
+    "acceptable_tables": ["categories", "category_hierarchy"],
+    "domain": "products",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q10",
+    "nl": "List all user roles in the system",
+    "expected_tables": ["roles"],
+    "acceptable_tables": ["roles", "user_roles", "users"],
+    "domain": "users",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q11",
+    "nl": "What coupons are currently active?",
+    "expected_tables": ["coupons"],
+    "acceptable_tables": ["coupons", "coupon_usage", "promo_codes"],
+    "domain": "sales",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q12",
+    "nl": "Show all brands and their countries of origin",
+    "expected_tables": ["brands"],
+    "acceptable_tables": ["brands", "products"],
+    "domain": "products",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q13",
+    "nl": "How many alerts were triggered today?",
+    "expected_tables": ["alert_history"],
+    "acceptable_tables": ["alert_history", "alert_rules"],
+    "domain": "ops",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q14",
+    "nl": "What are the daily metric values for this week?",
+    "expected_tables": ["metrics_daily"],
+    "acceptable_tables": ["metrics_daily", "metrics_weekly"],
+    "domain": "analytics",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q15",
+    "nl": "List all invoices issued this quarter",
+    "expected_tables": ["invoices"],
+    "acceptable_tables": ["invoices", "invoice_lines", "orders"],
+    "domain": "finance",
+    "difficulty": "easy",
+    "max_tables": 5
+  },
+  {
+    "id": "q16",
+    "nl": "What is the total revenue per product brand?",
+    "expected_tables": ["orders", "order_items", "products", "brands"],
+    "acceptable_tables": ["orders", "order_items", "products", "brands"],
+    "domain": "sales",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q17",
+    "nl": "Which users have items in their cart but never completed a purchase?",
+    "expected_tables": ["carts", "cart_items", "orders"],
+    "acceptable_tables": ["carts", "cart_items", "orders", "users"],
+    "domain": "sales",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q18",
+    "nl": "Show me the email campaign open rates by campaign name",
+    "expected_tables": ["email_campaigns", "email_sends", "campaigns"],
+    "acceptable_tables": ["email_campaigns", "email_sends", "campaigns"],
+    "domain": "marketing",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q19",
+    "nl": "What is the average order value per customer country?",
+    "expected_tables": ["orders", "users"],
+    "acceptable_tables": ["orders", "users", "order_items"],
+    "domain": "sales",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q20",
+    "nl": "How many users are in each cohort?",
+    "expected_tables": ["cohort_definitions", "cohort_members"],
+    "acceptable_tables": ["cohort_definitions", "cohort_members", "users"],
+    "domain": "analytics",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q21",
+    "nl": "What is the return rate per product category?",
+    "expected_tables": ["returns", "order_items", "products", "categories"],
+    "acceptable_tables": ["returns", "return_items", "order_items", "products", "categories", "orders"],
+    "domain": "sales",
+    "difficulty": "medium",
+    "max_tables": 6
+  },
+  {
+    "id": "q22",
+    "nl": "Which products have had price changes in the last 30 days?",
+    "expected_tables": ["price_history", "products"],
+    "acceptable_tables": ["price_history", "products", "product_variants"],
+    "domain": "products",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q23",
+    "nl": "Show me the expense reports pending approval by department",
+    "expected_tables": ["expense_reports"],
+    "acceptable_tables": ["expense_reports", "expense_items", "users"],
+    "domain": "finance",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q24",
+    "nl": "What is the conversion rate from ad impressions to actual purchases?",
+    "expected_tables": ["ad_impressions", "conversion_events"],
+    "acceptable_tables": ["ad_impressions", "conversion_events", "campaigns", "orders"],
+    "domain": "marketing",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q25",
+    "nl": "Which feature flags are enabled and what is their rollout percentage?",
+    "expected_tables": ["feature_flags"],
+    "acceptable_tables": ["feature_flags", "config_settings"],
+    "domain": "ops",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q26",
+    "nl": "How do the A/B test variants compare on conversion metrics?",
+    "expected_tables": ["ab_test_variants", "ab_test_results"],
+    "acceptable_tables": ["ab_test_variants", "ab_test_results", "conversion_events"],
+    "domain": "marketing",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q27",
+    "nl": "What is the funnel drop-off rate at each step?",
+    "expected_tables": ["funnel_steps", "funnel_progress"],
+    "acceptable_tables": ["funnel_steps", "funnel_progress", "users"],
+    "domain": "analytics",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q28",
+    "nl": "Show the payment method distribution across customers",
+    "expected_tables": ["payment_methods", "users"],
+    "acceptable_tables": ["payment_methods", "users", "payments"],
+    "domain": "finance",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q29",
+    "nl": "Which scheduled jobs have failed recently?",
+    "expected_tables": ["scheduled_jobs", "job_executions"],
+    "acceptable_tables": ["scheduled_jobs", "job_executions", "error_log"],
+    "domain": "ops",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q30",
+    "nl": "What are the most wishlisted products?",
+    "expected_tables": ["wishlist_items", "products"],
+    "acceptable_tables": ["wishlist_items", "wishlists", "products"],
+    "domain": "sales",
+    "difficulty": "medium",
+    "max_tables": 5
+  },
+  {
+    "id": "q31",
+    "nl": "Which marketing campaigns generated the highest customer lifetime value across all purchase channels?",
+    "expected_tables": ["campaigns", "conversion_events", "orders", "users"],
+    "acceptable_tables": ["campaigns", "conversion_events", "orders", "users", "order_items", "campaign_clicks"],
+    "domain": "marketing",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q32",
+    "nl": "Show me the correlation between login frequency and purchase amount for each user segment",
+    "expected_tables": ["login_attempts", "orders", "users", "cohort_members"],
+    "acceptable_tables": ["login_attempts", "orders", "users", "cohort_members", "cohort_definitions", "user_sessions"],
+    "domain": "analytics",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q33",
+    "nl": "What is the end-to-end journey from first ad impression to completed order for each customer?",
+    "expected_tables": ["ad_impressions", "campaign_clicks", "orders", "users"],
+    "acceptable_tables": ["ad_impressions", "campaign_clicks", "conversion_events", "orders", "users", "campaigns"],
+    "domain": "marketing",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q34",
+    "nl": "How does warehouse stock level correlate with order fulfillment speed across regions?",
+    "expected_tables": ["warehouse_inventory", "warehouses", "orders", "order_status_history"],
+    "acceptable_tables": ["warehouse_inventory", "warehouses", "orders", "order_status_history", "inventory", "order_items"],
+    "domain": "products",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q35",
+    "nl": "Which product categories have the highest return rate relative to their profit margin after tax?",
+    "expected_tables": ["returns", "order_items", "products", "categories", "tax_rates"],
+    "acceptable_tables": ["returns", "return_items", "order_items", "products", "categories", "tax_rates", "orders", "invoice_lines"],
+    "domain": "finance",
+    "difficulty": "hard",
+    "max_tables": 7
+  },
+  {
+    "id": "q36",
+    "nl": "Identify users whose browsing sessions never resulted in adding items to cart",
+    "expected_tables": ["user_sessions", "page_views", "carts", "cart_items"],
+    "acceptable_tables": ["user_sessions", "page_views", "carts", "cart_items", "users", "session_events"],
+    "domain": "analytics",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q37",
+    "nl": "What is the financial impact of system downtime incidents on order revenue?",
+    "expected_tables": ["system_health", "alert_history", "orders"],
+    "acceptable_tables": ["system_health", "alert_history", "alert_rules", "orders", "error_log", "payments"],
+    "domain": "ops",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q38",
+    "nl": "Show me the ledger reconciliation between invoiced amounts, received payments, and issued refunds",
+    "expected_tables": ["ledger_entries", "invoices", "payments", "refunds"],
+    "acceptable_tables": ["ledger_entries", "invoices", "invoice_lines", "payments", "refunds", "orders"],
+    "domain": "finance",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q39",
+    "nl": "How do promo code redemptions affect repeat purchase behavior compared to organic buyers?",
+    "expected_tables": ["promo_codes", "coupon_usage", "orders", "users"],
+    "acceptable_tables": ["promo_codes", "coupon_usage", "coupons", "orders", "users", "order_items"],
+    "domain": "marketing",
+    "difficulty": "hard",
+    "max_tables": 6
+  },
+  {
+    "id": "q40",
+    "nl": "Which notification channels have the best delivery rate and how does it vary by user country?",
+    "expected_tables": ["notification_log", "notification_templates", "users"],
+    "acceptable_tables": ["notification_log", "notification_templates", "users", "user_addresses"],
+    "domain": "ops",
+    "difficulty": "hard",
+    "max_tables": 5
+  }
+]
