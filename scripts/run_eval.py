@@ -135,10 +135,56 @@ def main() -> None:
 
     try:
         import numpy  # noqa: F401
+
         print("Running enriched cosine retrieval ...")
-        results.append(run_evaluation(enriched_ctx, gt, "cosine", "Enriched Cosine"))
+        try:
+            results.append(
+                run_evaluation(enriched_ctx, gt, "cosine", "Enriched Cosine")
+            )
+        except Exception as e:
+            # sentence-transformers may fail (network). Fall back to hash.
+            print(f"  Semantic model failed ({e}), falling back to hash embedding...")
+            from sqlens.retrieval.cosine import _numpy_hash_embedding
+
+            enriched_ctx._embedding_fn = _numpy_hash_embedding
+            enriched_ctx._retriever = None
+            results.append(
+                run_evaluation(
+                    enriched_ctx, gt, "cosine", "Enriched Cosine (hash)"
+                )
+            )
     except ImportError:
         print("Skipping cosine retrieval (numpy not installed)")
+
+    # Domain-scoped retrieval
+    print("Running enriched keyword + domain filter ...")
+    domain_recalls: list[float] = []
+    domain_precisions: list[float] = []
+    domain_mrrs: list[float] = []
+    domain_hits: list[float] = []
+    for q in gt:
+        k = q.get("max_tables", 5)
+        try:
+            result = enriched_ctx.get_context(
+                q["nl"], max_tables=k, retrieval="keyword", domain="auto"
+            )
+            retrieved = [t.name for t in result.tables]
+        except Exception:
+            retrieved = []
+        domain_recalls.append(compute_recall_at_k(retrieved, q["expected_tables"]))
+        domain_precisions.append(
+            compute_precision_at_k(retrieved, q["acceptable_tables"], k)
+        )
+        domain_mrrs.append(compute_mrr(retrieved, q["expected_tables"]))
+        domain_hits.append(compute_hit_rate(retrieved, q["expected_tables"]))
+    results.append({
+        "label": "Enriched Keyword+Domain",
+        "recall": _avg(domain_recalls),
+        "precision": _avg(domain_precisions),
+        "mrr": _avg(domain_mrrs),
+        "hit_rate": _avg(domain_hits),
+        "n": len(gt),
+    })
 
     # 6. Print results
     print("\n")
