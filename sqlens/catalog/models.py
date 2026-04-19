@@ -217,12 +217,20 @@ class Catalog:
     enrichers_applied: list[str] = field(default_factory=list)
     version: str = "1.0"
 
+    def __post_init__(self) -> None:
+        self._table_index: dict[str, Table] = {}
+        self._index_dirty: bool = True
+
+    def _ensure_index(self) -> None:
+        """Rebuild the index if it is stale or out of sync with self.tables."""
+        if self._index_dirty or len(self._table_index) != len(self.tables):
+            self._table_index = {t.name: t for t in self.tables}
+            self._index_dirty = False
+
     def get_table(self, name: str) -> Table | None:
-        """Look up a table by name."""
-        for t in self.tables:
-            if t.name == name:
-                return t
-        return None
+        """Look up a table by name (O(1) via dict index)."""
+        self._ensure_index()
+        return self._table_index.get(name)
 
     @property
     def table_names(self) -> list[str]:

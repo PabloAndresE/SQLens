@@ -12,6 +12,11 @@ from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 from sqlens.connectors.base import ConnectorProtocol
 
 
+def _quote_ident(name: str) -> str:
+    """Return a double-quoted, escape-safe SQL identifier (SQLite/PostgreSQL style)."""
+    return '"' + name.replace('"', '""') + '"'
+
+
 class PostgreSQLConnector(ConnectorProtocol):
     """Connector for PostgreSQL databases.
 
@@ -45,7 +50,7 @@ class PostgreSQLConnector(ConnectorProtocol):
 
     def qualify_table_name(self, table: str) -> str:
         """Return double-quoted, schema-qualified table name for use in SQL."""
-        return f'"{self._schema}"."{table}"'
+        return f"{_quote_ident(self._schema)}.{_quote_ident(table)}"
 
     def get_tables(self) -> list[str]:
         rows = self._execute(
@@ -170,7 +175,7 @@ class PostgreSQLConnector(ConnectorProtocol):
         used by StatsEnricher's built-in queries.
         """
         fqn = self.qualify_table_name(table)
-        col = f'"{column_name}"'
+        col = _quote_ident(column_name)
         stats = ColumnStats()
 
         # Cardinality and null percentage

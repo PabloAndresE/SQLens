@@ -12,6 +12,11 @@ from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 from sqlens.connectors.base import ConnectorProtocol
 
 
+def _quote_ident(name: str) -> str:
+    """Return a backtick-quoted, escape-safe SQL identifier (MySQL/MariaDB style)."""
+    return '`' + name.replace('`', '``') + '`'
+
+
 class MySQLConnector(ConnectorProtocol):
     """Connector for MySQL / MariaDB databases.
 
@@ -42,7 +47,7 @@ class MySQLConnector(ConnectorProtocol):
     # ------------------------------------------------------------------
 
     def qualify_table_name(self, table: str) -> str:
-        return f"`{self._database}`.`{table}`"
+        return f"{_quote_ident(self._database)}.{_quote_ident(table)}"
 
     def get_tables(self) -> list[str]:
         rows = self._execute(
@@ -138,7 +143,7 @@ class MySQLConnector(ConnectorProtocol):
     ) -> ColumnStats | None:
         """Return column stats using MySQL-compatible SQL."""
         fqn = self.qualify_table_name(table)
-        col = f"`{column_name}`"
+        col = _quote_ident(column_name)
         stats = ColumnStats()
 
         # Cardinality and null percentage

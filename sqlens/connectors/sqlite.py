@@ -14,6 +14,11 @@ from sqlens.catalog.models import ColumnStats, RawColumn, RawForeignKey
 from sqlens.connectors.base import ConnectorProtocol
 
 
+def _quote_ident(name: str) -> str:
+    """Return a double-quoted, escape-safe SQL identifier (SQLite/PostgreSQL style)."""
+    return '"' + name.replace('"', '""') + '"'
+
+
 class SQLiteConnector(ConnectorProtocol):
     """Connector for SQLite databases.
 
@@ -48,7 +53,7 @@ class SQLiteConnector(ConnectorProtocol):
         return [r["name"] for r in rows]
 
     def get_columns(self, table: str) -> list[RawColumn]:
-        rows = self._conn.execute(f"PRAGMA table_info(\"{table}\")").fetchall()
+        rows = self._conn.execute(f"PRAGMA table_info({_quote_ident(table)})").fetchall()
         return [
             RawColumn(
                 name=r["name"],
@@ -61,11 +66,11 @@ class SQLiteConnector(ConnectorProtocol):
         ]
 
     def get_primary_keys(self, table: str) -> list[str]:
-        rows = self._conn.execute(f"PRAGMA table_info(\"{table}\")").fetchall()
+        rows = self._conn.execute(f"PRAGMA table_info({_quote_ident(table)})").fetchall()
         return [r["name"] for r in rows if r["pk"]]
 
     def get_foreign_keys(self, table: str) -> list[RawForeignKey]:
-        rows = self._conn.execute(f"PRAGMA foreign_key_list(\"{table}\")").fetchall()
+        rows = self._conn.execute(f"PRAGMA foreign_key_list({_quote_ident(table)})").fetchall()
         return [
             RawForeignKey(
                 source_column=r["from"],
@@ -78,7 +83,7 @@ class SQLiteConnector(ConnectorProtocol):
     def get_table_metadata(self, table: str) -> dict[str, Any]:
         # Row count via COUNT(*) — SQLite has no stats table
         row = self._conn.execute(
-            f"SELECT COUNT(*) AS cnt FROM \"{table}\""
+            f"SELECT COUNT(*) AS cnt FROM {_quote_ident(table)}"
         ).fetchone()
         row_count = row["cnt"] if row else 0
         return {"row_count": row_count}
@@ -90,7 +95,7 @@ class SQLiteConnector(ConnectorProtocol):
         return [dict(r) for r in rows]
 
     def qualify_table_name(self, table: str) -> str:
-        return f'"{table}"'
+        return _quote_ident(table)
 
     def get_column_stats(
         self,
@@ -102,7 +107,7 @@ class SQLiteConnector(ConnectorProtocol):
     ) -> ColumnStats | None:
         """Return column stats using SQLite-compatible SQL."""
         fqn = self.qualify_table_name(table)
-        col = f'"{column_name}"'
+        col = _quote_ident(column_name)
         stats = ColumnStats()
 
         # Cardinality and null percentage

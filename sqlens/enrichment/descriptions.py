@@ -273,12 +273,51 @@ def describe_column(name: str, data_type: str) -> str | None:
     return _describe_column_by_type(data_type)
 
 
+def _infer_table_purpose(column_names: list[str]) -> str | None:
+    """Infer a table's purpose from its column signatures."""
+    cols = {c.lower() for c in column_names}
+
+    # Financial / transactional
+    if cols & {"amount", "amt", "total_amt", "price", "total", "revenue", "cost"}:
+        if cols & {"order_id", "invoice_id", "payment_id"}:
+            return "transactional"
+    # Tracking / events
+    if cols & {"event_type", "event_name", "action", "occurred_at", "tracked_at"}:
+        return "event tracking"
+    # Junction / mapping table (mostly _id columns)
+    id_cols = [c for c in cols if c.endswith("_id") and c != "id"]
+    if len(id_cols) >= 2 and len(cols) <= len(id_cols) + 3:
+        entities = [c.replace("_id", "") for c in id_cols]
+        return f"maps {' to '.join(entities)}"
+    # Status / history
+    if cols & {"old_status", "new_status", "changed_at", "previous", "current"}:
+        return "status history"
+    # Configuration / settings
+    if cols & {"setting_key", "config_key", "flag_name", "pref_key"}:
+        return "configuration"
+    return None
+
+
 def describe_table(name: str, column_names: list[str]) -> str | None:
-    """Generate a description for a table based on its name and columns."""
+    """Generate a description for a table based on its name and columns.
+
+    Uses three strategies in order:
+    1. Abbreviation expansion of the table name
+    2. Column signature analysis to infer purpose
+    3. Returns None if neither matches (LLM fallback fills these)
+    """
+    # Strategy 1: abbreviation expansion
     expanded = _expand_abbreviations(name)
     original_joined = " ".join(name.lower().split("_"))
+
+    purpose = _infer_table_purpose(column_names)
+
+    if expanded != original_joined and purpose:
+        return f"{expanded.title()} — {purpose}"
     if expanded != original_joined:
         return expanded.title()
+    if purpose:
+        return f"{name.replace('_', ' ').title()} — {purpose}"
     return None
 
 

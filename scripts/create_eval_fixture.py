@@ -8,7 +8,6 @@ mix of declared and implicit foreign key relationships (~40% declared, ~60% impl
 Output: tests/evals/fixtures/techmart.db
 """
 
-import os
 import sqlite3
 from pathlib import Path
 
@@ -1601,7 +1600,7 @@ def main() -> None:
     conn.close()
 
     print(f"\n{'='*60}")
-    print(f"TechMart Enterprise — Fixture Summary")
+    print("TechMart Enterprise — Fixture Summary")
     print(f"{'='*60}")
     print(f"Database:            {DB_PATH}")
     print(f"Tables:              {table_count}")

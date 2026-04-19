@@ -59,6 +59,10 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+"scripts/create_eval_fixture.py" = ["E501"]
+"scripts/create_sqlite_fixture.py" = ["E501"]
+
 [tool.mypy]
 python_version = "3.10"
 warn_return_any = true

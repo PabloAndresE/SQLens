@@ -242,17 +242,17 @@ ctx.set_domain("dim_date", ["finance", "ops"])
 SQLens picks the best available retriever at runtime — no configuration required:
 
 ```
-chromadb / lancedb installed?  →  VectorDBRetriever    (ANN semantic search)
-numpy installed?               →  NumpyCosineRetriever (cosine similarity)
-fallback                       →  KeywordRetriever     (TF-IDF, zero deps)
+sentence-transformers installed? →  NumpyCosineRetriever (semantic embeddings)
+numpy installed?                 →  NumpyCosineRetriever (hash embeddings — deterministic, not semantic)
+fallback                         →  KeywordRetriever     (TF-IDF, zero deps)
 ```
 
-With `sentence-transformers` installed alongside numpy, the cosine retriever uses a real semantic embedding model. The model loads once per `SQLens` instance and is cached — repeated `get_context()` calls pay zero reload cost.
+**Important:** With numpy alone, the cosine retriever uses hash-based embeddings (deterministic random projections). These are better than keyword for partial matches but do **not** understand synonyms or semantics. For real semantic search, install `sentence-transformers` — the model loads once per `SQLens` instance and is cached.
 
 ```bash
-pip install sqlens[numpy]                          # cosine with hash embeddings
-pip install "sqlens[numpy]" sentence-transformers  # cosine with semantic model
-pip install sqlens[vector]                         # full vector DB
+pip install sqlens[numpy]                          # cosine with hash embeddings (fast, no downloads)
+pip install "sqlens[numpy]" sentence-transformers  # cosine with semantic model (recommended)
+pip install sqlens[vector]                         # full vector DB (chromadb)
 ```
 
 > **Note:** The auto-detect cascade covers keyword and cosine retrieval. Vector DB retrieval requires explicit setup via `set_retriever()` because it needs a configured embedding function and persistence path. See `VectorDBRetriever` in the source for details.
