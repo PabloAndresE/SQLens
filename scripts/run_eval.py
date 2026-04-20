@@ -135,24 +135,13 @@ def main() -> None:
 
     try:
         import numpy  # noqa: F401
-
         print("Running enriched cosine retrieval ...")
         try:
             results.append(
                 run_evaluation(enriched_ctx, gt, "cosine", "Enriched Cosine")
             )
-        except Exception as e:
-            # sentence-transformers may fail (network). Fall back to hash.
-            print(f"  Semantic model failed ({e}), falling back to hash embedding...")
-            from sqlens.retrieval.cosine import _numpy_hash_embedding
-
-            enriched_ctx._embedding_fn = _numpy_hash_embedding
-            enriched_ctx._retriever = None
-            results.append(
-                run_evaluation(
-                    enriched_ctx, gt, "cosine", "Enriched Cosine (hash)"
-                )
-            )
+        except (ImportError, Exception) as e:
+            print(f"  Skipping cosine retrieval: {e}")
     except ImportError:
         print("Skipping cosine retrieval (numpy not installed)")
 

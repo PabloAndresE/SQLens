@@ -499,15 +499,11 @@ The `domain="auto"` classifier works in two tiers:
 The retriever auto-detects the best available strategy on the (possibly filtered) table set:
 
 ```
-1. Check: chromadb or lancedb installed?
-   YES → VectorDBRetriever (semantic search, ANN index)
+1. Check: sentence-transformers installed?
+   YES → NumpyCosineRetriever (semantic search via sentence-transformers)
    NO  ↓
 
-2. Check: numpy installed?
-   YES → NumpyCosineRetriever (cosine similarity on pre-computed embeddings)
-   NO  ↓
-
-3. Fallback → KeywordRetriever (TF-IDF token matching, zero deps)
+2. Fallback → KeywordRetriever (TF-IDF token matching, zero deps)
 ```
 
 ### Full cascade example
@@ -713,7 +709,7 @@ Key testing patterns:
 - **MemoryConnector**: in-memory connector for zero-dep unit tests
 - **psycopg2 mocking**: `patch.dict("sys.modules", {"psycopg2": mock_pg})` tests PostgreSQL without a real DB
 - **`pytest.mark.skipif(_NUMPY_AVAILABLE)`**: cosine tests skipped if numpy not installed
-- **Deterministic embeddings**: `_numpy_hash_embedding` used instead of sentence-transformers model in tests
+- **Deterministic embeddings**: mock embedding function used instead of sentence-transformers model in tests
 
 ```
 tests/

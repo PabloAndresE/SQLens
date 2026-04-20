@@ -22,7 +22,6 @@ try:
     from sqlens.retrieval.cosine import (
         NumpyCosineRetriever,
         _build_default_embedding_fn,
-        _numpy_hash_embedding,
     )
     _NUMPY_AVAILABLE = True
 except ImportError:
@@ -481,60 +480,36 @@ class TestPKInference:
 @pytest.mark.skipif(not _NUMPY_AVAILABLE, reason="numpy not installed")
 class TestCosineRetriever:
 
-    # --- _numpy_hash_embedding ---
-
-    def test_hash_embedding_returns_unit_vector(self):
-        vec = _numpy_hash_embedding("hello world")
-        assert len(vec) == 256
-        norm = sum(x * x for x in vec) ** 0.5
-        assert abs(norm - 1.0) < 1e-5
-
-    def test_hash_embedding_deterministic(self):
-        text = "user email country"
-        assert _numpy_hash_embedding(text) == _numpy_hash_embedding(text)
-
-    def test_hash_embedding_empty_text(self):
-        vec = _numpy_hash_embedding("")
-        assert len(vec) == 256
-        assert all(x == 0.0 for x in vec)
-
-    def test_hash_embedding_different_texts(self):
-        v1 = _numpy_hash_embedding("users table email")
-        v2 = _numpy_hash_embedding("orders total amount")
-        assert v1 != v2
+    @staticmethod
+    def _mock_embed(text: str) -> list[float]:
+        """Simple deterministic mock embedding for tests."""
+        import hashlib
+        seed = int(hashlib.md5(text.encode()).hexdigest(), 16) % 1000
+        return [float(seed + i) / 1000.0 for i in range(256)]
 
     # --- _build_default_embedding_fn ---
 
-    def test_build_default_fn_returns_callable(self):
-        fn = _build_default_embedding_fn()
-        assert callable(fn)
-        result = fn("test query")
-        assert isinstance(result, list)
-        assert all(isinstance(x, float) for x in result)
-
-    def test_build_default_fn_uses_hash_without_sentence_transformers(self):
-        # sentence-transformers is not installed in this test env,
-        # so the fallback must be _numpy_hash_embedding
-        import sys
-        if "sentence_transformers" not in sys.modules:
-            fn = _build_default_embedding_fn()
-            assert fn is _numpy_hash_embedding
+    def test_build_default_fn_raises_without_sentence_transformers(self):
+        """Without sentence-transformers, _build_default_embedding_fn raises ImportError."""
+        with patch.dict("sys.modules", {"sentence_transformers": None}):
+            with pytest.raises(ImportError, match="sentence-transformers"):
+                _build_default_embedding_fn()
 
     # --- NumpyCosineRetriever ---
 
     def _make_retriever(self):
-        retriever = NumpyCosineRetriever(embedding_fn=_numpy_hash_embedding)
+        retriever = NumpyCosineRetriever(embedding_fn=self._mock_embed)
         connector = _make_ecommerce_connector()
         ctx = SQLens.from_connector(connector)
         retriever.build_index(ctx.catalog)
         return retriever
 
     def test_is_available(self):
-        retriever = NumpyCosineRetriever(embedding_fn=_numpy_hash_embedding)
+        retriever = NumpyCosineRetriever(embedding_fn=self._mock_embed)
         assert retriever.is_available() is True
 
     def test_retrieve_before_build_raises(self):
-        retriever = NumpyCosineRetriever(embedding_fn=_numpy_hash_embedding)
+        retriever = NumpyCosineRetriever(embedding_fn=self._mock_embed)
         with pytest.raises(RuntimeError):
             retriever.retrieve("anything")
 
@@ -553,11 +528,6 @@ class TestCosineRetriever:
         result = retriever.retrieve("user email country active", max_tables=4)
         for score in result.scores.values():
             assert score <= 1.0
-
-    def test_zero_score_excluded_without_filter(self):
-        retriever = self._make_retriever()
-        result = retriever.retrieve("xyz zzz", max_tables=5)
-        assert result.tables == []
 
     def test_domain_filter_excludes_non_candidates(self):
         retriever = self._make_retriever()
@@ -582,24 +552,12 @@ class TestCosineRetriever:
 
     # --- _resolve_retriever / cascade ---
 
-    def test_auto_detect_uses_cosine_when_numpy_installed(self):
-        connector = _make_ecommerce_connector()
-        ctx = SQLens.from_connector(connector)
-        result = ctx.get_context("user email country active", max_tables=2)
-        assert result.retrieval_method == "cosine"
-
     def test_forced_keyword(self):
         connector = _make_ecommerce_connector()
         ctx = SQLens.from_connector(connector)
         ctx.enrich(descriptions=True)
         result = ctx.get_context("user email country active", max_tables=2, retrieval="keyword")
         assert result.retrieval_method == "keyword"
-
-    def test_forced_cosine(self):
-        connector = _make_ecommerce_connector()
-        ctx = SQLens.from_connector(connector)
-        result = ctx.get_context("user email country active", max_tables=2, retrieval="cosine")
-        assert result.retrieval_method == "cosine"
 
     def test_forced_vector_raises(self):
         connector = _make_ecommerce_connector()

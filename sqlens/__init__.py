@@ -342,12 +342,11 @@ class SQLens:
         """Resolve the best available retriever (auto-detect cascade).
 
         Cascade order:
-          1. VectorDBRetriever (chromadb + sentence-transformers) — if installed
-          2. NumpyCosineRetriever (numpy, auto-detects best embedding fn)
-          3. KeywordRetriever — always available, zero deps
+          1. NumpyCosineRetriever (sentence-transformers) — semantic search
+          2. KeywordRetriever — always available, zero deps
 
         forced="keyword"  → always keyword
-        forced="cosine"   → cosine or ImportError if numpy missing
+        forced="cosine"   → cosine or ImportError if sentence-transformers missing
         forced="vector"   → must use set_retriever() (requires user-configured embed fn)
         """
         if forced == "vector":

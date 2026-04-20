@@ -129,57 +129,17 @@ class NumpyCosineRetriever(RetrieverProtocol):
         return " ".join(parts)
 
 
-import re  # noqa: E402
-
-
-def _numpy_hash_embedding(text: str, dim: int = 256) -> list[float]:
-    """Hash-based embedding using numpy only. Deterministic, no downloads.
-
-    Maps each token to a random unit vector seeded by its hash, then averages.
-    Not semantically meaningful (no synonym detection), but produces consistent
-    dense vectors — better than pure keyword for partial-match scenarios.
-    """
-    import hashlib
-
-    import numpy as np
-
-    tokens = re.findall(r"[a-z0-9]+", text.lower())
-    if not tokens:
-        return [0.0] * dim
-
-    vec = np.zeros(dim, dtype=np.float32)
-    for token in tokens:
-        seed = int(hashlib.md5(token.encode()).hexdigest(), 16) % (2**31)
-        rng = np.random.RandomState(seed)
-        vec += rng.randn(dim).astype(np.float32)
-
-    vec = vec / len(tokens)
-    norm = np.linalg.norm(vec)
-    return (vec / norm if norm > 0 else vec).tolist()  # type: ignore[no-any-return]
-
-
 def _build_default_embedding_fn() -> Callable[[str], list[float]]:
-    """Return the best available embedding function.
+    """Return a semantic embedding function using sentence-transformers.
 
-    Priority:
-    1. sentence-transformers (sqlens[vector]) — semantic quality
-    2. numpy hash embedding (sqlens[numpy]) — deterministic, zero ML deps
-
-    Raises ImportError if numpy is not installed.
+    Raises ImportError if sentence-transformers is not installed.
     """
-    # Try sentence-transformers first
     try:
         from sentence_transformers import SentenceTransformer
         model = SentenceTransformer("all-MiniLM-L6-v2")
         return lambda text: model.encode(text, show_progress_bar=False).tolist()
     except ImportError:
-        pass
-
-    # Fallback: numpy hash embedding
-    try:
-        import numpy as np  # noqa: F401 — just checking it's installed
-        return _numpy_hash_embedding
-    except ImportError:
         raise ImportError(
-            "Cosine retriever requires numpy. Install with: pip install sqlens[numpy]"
+            "Cosine retrieval requires sentence-transformers. "
+            "Install with: pip install sentence-transformers"
         )
