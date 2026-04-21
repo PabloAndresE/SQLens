@@ -153,11 +153,11 @@ print(context.to_dict())    # structured dict / JSON
 
 ## Enrichment
 
-Each enricher is optional and composable. Run them once, save the catalog, reuse forever.
+Each enricher is optional and composable. **Enrich once, query thousands of times.** The cost model: one enrichment pass (seconds for rule-based, ~$0.01-0.05 in LLM calls for a 100-table schema) produces a catalog that serves every subsequent `get_context()` call at zero marginal cost. Save the catalog to JSON and reload it across sessions — no re-enrichment needed unless the schema changes.
 
 ### Descriptions
 
-Rule-based heuristics expand abbreviations and detect naming patterns automatically:
+Rule-based heuristics expand abbreviations, detect naming patterns, and analyze column signatures to infer table purpose:
 
 | Input | Output |
 |-------|--------|
